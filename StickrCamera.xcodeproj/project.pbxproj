@@ -8,11 +8,23 @@
 
 /* Begin PBXBuildFile section */
 		441432A41FA7FB0A00235F81 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 441432A31FA7FB0A00235F81 /* AppDelegate.swift */; };
-		441432A61FA7FB0A00235F81 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 441432A51FA7FB0A00235F81 /* ViewController.swift */; };
+		441432A61FA7FB0A00235F81 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 441432A51FA7FB0A00235F81 /* CameraViewController.swift */; };
 		441432A91FA7FB0A00235F81 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 441432A71FA7FB0A00235F81 /* Main.storyboard */; };
 		441432AB1FA7FB0A00235F81 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 441432AA1FA7FB0A00235F81 /* Assets.xcassets */; };
 		441432AE1FA7FB0A00235F81 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 441432AC1FA7FB0A00235F81 /* LaunchScreen.storyboard */; };
 		441432B91FA7FB0A00235F81 /* StickrCameraUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 441432B81FA7FB0A00235F81 /* StickrCameraUITests.swift */; };
+		4419D1851FB3DDEB00EFECC2 /* FilterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4419D1841FB3DDEB00EFECC2 /* FilterViewController.swift */; };
+		441E1F8C1FB1699400938C2D /* SavedStickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 441E1F8B1FB1699400938C2D /* SavedStickerViewController.swift */; };
+		441E1F8F1FB16FC400938C2D /* SavedStickerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 441E1F8E1FB16FC400938C2D /* SavedStickerCell.swift */; };
+		442A3F401FAB971F00E2EDCB /* EditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 442A3F3F1FAB971F00E2EDCB /* EditView.swift */; };
+		442A3F421FABCBBE00E2EDCB /* EditFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 442A3F411FABCBBE00E2EDCB /* EditFilters.swift */; };
+		442A3F471FABE6B000E2EDCB /* StickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 442A3F461FABE6B000E2EDCB /* StickerViewController.swift */; };
+		44ADD73D1FAC3733004A0230 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44ADD73C1FAC3733004A0230 /* Helpers.swift */; };
+		44BE2CFD1FAC1C8900FD812B /* StickerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44BE2CFC1FAC1C8900FD812B /* StickerCell.swift */; };
+		44CCDF251FAE3B0F00B7BA68 /* Sticker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44CCDF241FAE3B0F00B7BA68 /* Sticker.swift */; };
+		44CCDF271FAE3B8000B7BA68 /* CreateStickers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44CCDF261FAE3B8000B7BA68 /* CreateStickers.swift */; };
+		44CCDF2A1FAE84C000B7BA68 /* StickerHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44CCDF291FAE84C000B7BA68 /* StickerHeaderCell.swift */; };
+		44D1F3D41FAA671100839632 /* EditCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44D1F3D31FAA671100839632 /* EditCollectionViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -28,7 +40,7 @@
 /* Begin PBXFileReference section */
 		441432A01FA7FB0A00235F81 /* StickrCamera.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StickrCamera.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		441432A31FA7FB0A00235F81 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		441432A51FA7FB0A00235F81 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		441432A51FA7FB0A00235F81 /* CameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		441432A81FA7FB0A00235F81 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		441432AA1FA7FB0A00235F81 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		441432AD1FA7FB0A00235F81 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -36,6 +48,18 @@
 		441432B41FA7FB0A00235F81 /* StickrCameraUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StickrCameraUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		441432B81FA7FB0A00235F81 /* StickrCameraUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickrCameraUITests.swift; sourceTree = "<group>"; };
 		441432BA1FA7FB0A00235F81 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4419D1841FB3DDEB00EFECC2 /* FilterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterViewController.swift; sourceTree = "<group>"; };
+		441E1F8B1FB1699400938C2D /* SavedStickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedStickerViewController.swift; sourceTree = "<group>"; };
+		441E1F8E1FB16FC400938C2D /* SavedStickerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedStickerCell.swift; sourceTree = "<group>"; };
+		442A3F3F1FAB971F00E2EDCB /* EditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditView.swift; sourceTree = "<group>"; };
+		442A3F411FABCBBE00E2EDCB /* EditFilters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditFilters.swift; sourceTree = "<group>"; };
+		442A3F461FABE6B000E2EDCB /* StickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerViewController.swift; sourceTree = "<group>"; };
+		44ADD73C1FAC3733004A0230 /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
+		44BE2CFC1FAC1C8900FD812B /* StickerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerCell.swift; sourceTree = "<group>"; };
+		44CCDF241FAE3B0F00B7BA68 /* Sticker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sticker.swift; sourceTree = "<group>"; };
+		44CCDF261FAE3B8000B7BA68 /* CreateStickers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateStickers.swift; sourceTree = "<group>"; };
+		44CCDF291FAE84C000B7BA68 /* StickerHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerHeaderCell.swift; sourceTree = "<group>"; };
+		44D1F3D31FAA671100839632 /* EditCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCollectionViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,7 +102,12 @@
 			isa = PBXGroup;
 			children = (
 				441432A31FA7FB0A00235F81 /* AppDelegate.swift */,
-				441432A51FA7FB0A00235F81 /* ViewController.swift */,
+				442A3F431FABE65400E2EDCB /* Camera */,
+				442A3F441FABE67100E2EDCB /* EditView */,
+				442A3F451FABE68200E2EDCB /* Sticker */,
+				441E1F8D1FB16B5D00938C2D /* SavedStickers */,
+				44ADD73C1FAC3733004A0230 /* Helpers.swift */,
+				4419D1841FB3DDEB00EFECC2 /* FilterViewController.swift */,
 				441432A71FA7FB0A00235F81 /* Main.storyboard */,
 				441432AA1FA7FB0A00235F81 /* Assets.xcassets */,
 				441432AC1FA7FB0A00235F81 /* LaunchScreen.storyboard */,
@@ -94,6 +123,53 @@
 				441432BA1FA7FB0A00235F81 /* Info.plist */,
 			);
 			path = StickrCameraUITests;
+			sourceTree = "<group>";
+		};
+		441E1F8D1FB16B5D00938C2D /* SavedStickers */ = {
+			isa = PBXGroup;
+			children = (
+				441E1F8B1FB1699400938C2D /* SavedStickerViewController.swift */,
+				441E1F8E1FB16FC400938C2D /* SavedStickerCell.swift */,
+			);
+			path = SavedStickers;
+			sourceTree = "<group>";
+		};
+		442A3F431FABE65400E2EDCB /* Camera */ = {
+			isa = PBXGroup;
+			children = (
+				441432A51FA7FB0A00235F81 /* CameraViewController.swift */,
+			);
+			path = Camera;
+			sourceTree = "<group>";
+		};
+		442A3F441FABE67100E2EDCB /* EditView */ = {
+			isa = PBXGroup;
+			children = (
+				442A3F3F1FAB971F00E2EDCB /* EditView.swift */,
+				44D1F3D31FAA671100839632 /* EditCollectionViewCell.swift */,
+				442A3F411FABCBBE00E2EDCB /* EditFilters.swift */,
+			);
+			path = EditView;
+			sourceTree = "<group>";
+		};
+		442A3F451FABE68200E2EDCB /* Sticker */ = {
+			isa = PBXGroup;
+			children = (
+				442A3F461FABE6B000E2EDCB /* StickerViewController.swift */,
+				44CCDF291FAE84C000B7BA68 /* StickerHeaderCell.swift */,
+				44BE2CFC1FAC1C8900FD812B /* StickerCell.swift */,
+				44CCDF281FAE3B8B00B7BA68 /* Model */,
+			);
+			path = Sticker;
+			sourceTree = "<group>";
+		};
+		44CCDF281FAE3B8B00B7BA68 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				44CCDF241FAE3B0F00B7BA68 /* Sticker.swift */,
+				44CCDF261FAE3B8000B7BA68 /* CreateStickers.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -199,8 +275,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				441432A61FA7FB0A00235F81 /* ViewController.swift in Sources */,
+				4419D1851FB3DDEB00EFECC2 /* FilterViewController.swift in Sources */,
+				441E1F8F1FB16FC400938C2D /* SavedStickerCell.swift in Sources */,
+				442A3F471FABE6B000E2EDCB /* StickerViewController.swift in Sources */,
+				441432A61FA7FB0A00235F81 /* CameraViewController.swift in Sources */,
+				442A3F421FABCBBE00E2EDCB /* EditFilters.swift in Sources */,
+				44ADD73D1FAC3733004A0230 /* Helpers.swift in Sources */,
+				44CCDF251FAE3B0F00B7BA68 /* Sticker.swift in Sources */,
+				44D1F3D41FAA671100839632 /* EditCollectionViewCell.swift in Sources */,
+				442A3F401FAB971F00E2EDCB /* EditView.swift in Sources */,
+				44CCDF271FAE3B8000B7BA68 /* CreateStickers.swift in Sources */,
+				441E1F8C1FB1699400938C2D /* SavedStickerViewController.swift in Sources */,
+				44BE2CFD1FAC1C8900FD812B /* StickerCell.swift in Sources */,
 				441432A41FA7FB0A00235F81 /* AppDelegate.swift in Sources */,
+				44CCDF2A1FAE84C000B7BA68 /* StickerHeaderCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -290,7 +378,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -341,7 +429,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -356,6 +444,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5M9BB34F6M;
 				INFOPLIST_FILE = StickrCamera/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.creativemic.StickrCamera;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -371,6 +460,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5M9BB34F6M;
 				INFOPLIST_FILE = StickrCamera/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.creativemic.StickrCamera;
 				PRODUCT_NAME = "$(TARGET_NAME)";
