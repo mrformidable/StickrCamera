@@ -14,17 +14,24 @@
 		441432AE1FA7FB0A00235F81 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 441432AC1FA7FB0A00235F81 /* LaunchScreen.storyboard */; };
 		441432B91FA7FB0A00235F81 /* StickrCameraUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 441432B81FA7FB0A00235F81 /* StickrCameraUITests.swift */; };
 		4419D1851FB3DDEB00EFECC2 /* FilterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4419D1841FB3DDEB00EFECC2 /* FilterViewController.swift */; };
+		4419D1881FB5339B00EFECC2 /* FilterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4419D1871FB5339B00EFECC2 /* FilterCell.swift */; };
+		4419D18C1FB57ED300EFECC2 /* AddStickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4419D18B1FB57ED300EFECC2 /* AddStickerViewController.swift */; };
+		4419D18E1FB67AC100EFECC2 /* AddStickerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4419D18D1FB67AC100EFECC2 /* AddStickerCell.swift */; };
 		441E1F8C1FB1699400938C2D /* SavedStickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 441E1F8B1FB1699400938C2D /* SavedStickerViewController.swift */; };
 		441E1F8F1FB16FC400938C2D /* SavedStickerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 441E1F8E1FB16FC400938C2D /* SavedStickerCell.swift */; };
-		442A3F401FAB971F00E2EDCB /* EditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 442A3F3F1FAB971F00E2EDCB /* EditView.swift */; };
 		442A3F421FABCBBE00E2EDCB /* EditFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 442A3F411FABCBBE00E2EDCB /* EditFilters.swift */; };
 		442A3F471FABE6B000E2EDCB /* StickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 442A3F461FABE6B000E2EDCB /* StickerViewController.swift */; };
+		44A4C65D1FBB8649006A5AC1 /* SavedStickerModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 44A4C65B1FBB8649006A5AC1 /* SavedStickerModel.xcdatamodeld */; };
+		44A4C65F1FBBE9C2006A5AC1 /* StickerMO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A4C65E1FBBE9C2006A5AC1 /* StickerMO.swift */; };
 		44ADD73D1FAC3733004A0230 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44ADD73C1FAC3733004A0230 /* Helpers.swift */; };
 		44BE2CFD1FAC1C8900FD812B /* StickerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44BE2CFC1FAC1C8900FD812B /* StickerCell.swift */; };
 		44CCDF251FAE3B0F00B7BA68 /* Sticker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44CCDF241FAE3B0F00B7BA68 /* Sticker.swift */; };
 		44CCDF271FAE3B8000B7BA68 /* CreateStickers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44CCDF261FAE3B8000B7BA68 /* CreateStickers.swift */; };
 		44CCDF2A1FAE84C000B7BA68 /* StickerHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44CCDF291FAE84C000B7BA68 /* StickerHeaderCell.swift */; };
-		44D1F3D41FAA671100839632 /* EditCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44D1F3D31FAA671100839632 /* EditCollectionViewCell.swift */; };
+		44F1DF021FBA5574004F56A1 /* MoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44F1DF011FBA5574004F56A1 /* MoreViewController.swift */; };
+		44F1DF081FBAAE05004F56A1 /* CustomAnimationPresentor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44F1DF071FBAAE04004F56A1 /* CustomAnimationPresentor.swift */; };
+		44F1DF0A1FBAAE0E004F56A1 /* CustomAnimationDismissor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44F1DF091FBAAE0D004F56A1 /* CustomAnimationDismissor.swift */; };
+		44F1DF121FBACBDC004F56A1 /* CustomAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44F1DF111FBACBDC004F56A1 /* CustomAlertView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,17 +56,24 @@
 		441432B81FA7FB0A00235F81 /* StickrCameraUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickrCameraUITests.swift; sourceTree = "<group>"; };
 		441432BA1FA7FB0A00235F81 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4419D1841FB3DDEB00EFECC2 /* FilterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterViewController.swift; sourceTree = "<group>"; };
+		4419D1871FB5339B00EFECC2 /* FilterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCell.swift; sourceTree = "<group>"; };
+		4419D18B1FB57ED300EFECC2 /* AddStickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddStickerViewController.swift; sourceTree = "<group>"; };
+		4419D18D1FB67AC100EFECC2 /* AddStickerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddStickerCell.swift; sourceTree = "<group>"; };
 		441E1F8B1FB1699400938C2D /* SavedStickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedStickerViewController.swift; sourceTree = "<group>"; };
 		441E1F8E1FB16FC400938C2D /* SavedStickerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedStickerCell.swift; sourceTree = "<group>"; };
-		442A3F3F1FAB971F00E2EDCB /* EditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditView.swift; sourceTree = "<group>"; };
 		442A3F411FABCBBE00E2EDCB /* EditFilters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditFilters.swift; sourceTree = "<group>"; };
 		442A3F461FABE6B000E2EDCB /* StickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerViewController.swift; sourceTree = "<group>"; };
+		44A4C65C1FBB8649006A5AC1 /* CoreDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoreDataModel.xcdatamodel; sourceTree = "<group>"; };
+		44A4C65E1FBBE9C2006A5AC1 /* StickerMO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerMO.swift; sourceTree = "<group>"; };
 		44ADD73C1FAC3733004A0230 /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		44BE2CFC1FAC1C8900FD812B /* StickerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerCell.swift; sourceTree = "<group>"; };
 		44CCDF241FAE3B0F00B7BA68 /* Sticker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sticker.swift; sourceTree = "<group>"; };
 		44CCDF261FAE3B8000B7BA68 /* CreateStickers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateStickers.swift; sourceTree = "<group>"; };
 		44CCDF291FAE84C000B7BA68 /* StickerHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerHeaderCell.swift; sourceTree = "<group>"; };
-		44D1F3D31FAA671100839632 /* EditCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCollectionViewCell.swift; sourceTree = "<group>"; };
+		44F1DF011FBA5574004F56A1 /* MoreViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreViewController.swift; sourceTree = "<group>"; };
+		44F1DF071FBAAE04004F56A1 /* CustomAnimationPresentor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAnimationPresentor.swift; sourceTree = "<group>"; };
+		44F1DF091FBAAE0D004F56A1 /* CustomAnimationDismissor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAnimationDismissor.swift; sourceTree = "<group>"; };
+		44F1DF111FBACBDC004F56A1 /* CustomAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +94,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		44088BB01FBA3FBC005AB1EB /* AddStickers */ = {
+			isa = PBXGroup;
+			children = (
+				4419D18D1FB67AC100EFECC2 /* AddStickerCell.swift */,
+				4419D18B1FB57ED300EFECC2 /* AddStickerViewController.swift */,
+			);
+			path = AddStickers;
+			sourceTree = "<group>";
+		};
 		441432971FA7FB0A00235F81 = {
 			isa = PBXGroup;
 			children = (
@@ -101,15 +124,20 @@
 		441432A21FA7FB0A00235F81 /* StickrCamera */ = {
 			isa = PBXGroup;
 			children = (
-				441432A31FA7FB0A00235F81 /* AppDelegate.swift */,
 				442A3F431FABE65400E2EDCB /* Camera */,
 				442A3F441FABE67100E2EDCB /* EditView */,
 				442A3F451FABE68200E2EDCB /* Sticker */,
 				441E1F8D1FB16B5D00938C2D /* SavedStickers */,
 				44ADD73C1FAC3733004A0230 /* Helpers.swift */,
-				4419D1841FB3DDEB00EFECC2 /* FilterViewController.swift */,
+				4419D18A1FB57EAC00EFECC2 /* FiltersViewController */,
+				44088BB01FBA3FBC005AB1EB /* AddStickers */,
 				441432A71FA7FB0A00235F81 /* Main.storyboard */,
+				44F1DF0C1FBAAE23004F56A1 /* MoreViewController */,
+				44F1DF0B1FBAAE14004F56A1 /* CustomAnimation */,
 				441432AA1FA7FB0A00235F81 /* Assets.xcassets */,
+				441432A31FA7FB0A00235F81 /* AppDelegate.swift */,
+				44A4C65B1FBB8649006A5AC1 /* SavedStickerModel.xcdatamodeld */,
+				44A4C65E1FBBE9C2006A5AC1 /* StickerMO.swift */,
 				441432AC1FA7FB0A00235F81 /* LaunchScreen.storyboard */,
 				441432AF1FA7FB0A00235F81 /* Info.plist */,
 			);
@@ -123,6 +151,15 @@
 				441432BA1FA7FB0A00235F81 /* Info.plist */,
 			);
 			path = StickrCameraUITests;
+			sourceTree = "<group>";
+		};
+		4419D18A1FB57EAC00EFECC2 /* FiltersViewController */ = {
+			isa = PBXGroup;
+			children = (
+				4419D1841FB3DDEB00EFECC2 /* FilterViewController.swift */,
+				4419D1871FB5339B00EFECC2 /* FilterCell.swift */,
+			);
+			path = FiltersViewController;
 			sourceTree = "<group>";
 		};
 		441E1F8D1FB16B5D00938C2D /* SavedStickers */ = {
@@ -145,8 +182,6 @@
 		442A3F441FABE67100E2EDCB /* EditView */ = {
 			isa = PBXGroup;
 			children = (
-				442A3F3F1FAB971F00E2EDCB /* EditView.swift */,
-				44D1F3D31FAA671100839632 /* EditCollectionViewCell.swift */,
 				442A3F411FABCBBE00E2EDCB /* EditFilters.swift */,
 			);
 			path = EditView;
@@ -170,6 +205,24 @@
 				44CCDF261FAE3B8000B7BA68 /* CreateStickers.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		44F1DF0B1FBAAE14004F56A1 /* CustomAnimation */ = {
+			isa = PBXGroup;
+			children = (
+				44F1DF071FBAAE04004F56A1 /* CustomAnimationPresentor.swift */,
+				44F1DF091FBAAE0D004F56A1 /* CustomAnimationDismissor.swift */,
+			);
+			path = CustomAnimation;
+			sourceTree = "<group>";
+		};
+		44F1DF0C1FBAAE23004F56A1 /* MoreViewController */ = {
+			isa = PBXGroup;
+			children = (
+				44F1DF011FBA5574004F56A1 /* MoreViewController.swift */,
+				44F1DF111FBACBDC004F56A1 /* CustomAlertView.swift */,
+			);
+			path = MoreViewController;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -279,16 +332,23 @@
 				441E1F8F1FB16FC400938C2D /* SavedStickerCell.swift in Sources */,
 				442A3F471FABE6B000E2EDCB /* StickerViewController.swift in Sources */,
 				441432A61FA7FB0A00235F81 /* CameraViewController.swift in Sources */,
+				4419D1881FB5339B00EFECC2 /* FilterCell.swift in Sources */,
+				44F1DF021FBA5574004F56A1 /* MoreViewController.swift in Sources */,
 				442A3F421FABCBBE00E2EDCB /* EditFilters.swift in Sources */,
+				4419D18C1FB57ED300EFECC2 /* AddStickerViewController.swift in Sources */,
 				44ADD73D1FAC3733004A0230 /* Helpers.swift in Sources */,
+				44F1DF081FBAAE05004F56A1 /* CustomAnimationPresentor.swift in Sources */,
 				44CCDF251FAE3B0F00B7BA68 /* Sticker.swift in Sources */,
-				44D1F3D41FAA671100839632 /* EditCollectionViewCell.swift in Sources */,
-				442A3F401FAB971F00E2EDCB /* EditView.swift in Sources */,
 				44CCDF271FAE3B8000B7BA68 /* CreateStickers.swift in Sources */,
 				441E1F8C1FB1699400938C2D /* SavedStickerViewController.swift in Sources */,
 				44BE2CFD1FAC1C8900FD812B /* StickerCell.swift in Sources */,
+				44A4C65D1FBB8649006A5AC1 /* SavedStickerModel.xcdatamodeld in Sources */,
+				44F1DF121FBACBDC004F56A1 /* CustomAlertView.swift in Sources */,
 				441432A41FA7FB0A00235F81 /* AppDelegate.swift in Sources */,
 				44CCDF2A1FAE84C000B7BA68 /* StickerHeaderCell.swift in Sources */,
+				44F1DF0A1FBAAE0E004F56A1 /* CustomAnimationDismissor.swift in Sources */,
+				44A4C65F1FBBE9C2006A5AC1 /* StickerMO.swift in Sources */,
+				4419D18E1FB67AC100EFECC2 /* AddStickerCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -532,6 +592,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		44A4C65B1FBB8649006A5AC1 /* SavedStickerModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				44A4C65C1FBB8649006A5AC1 /* CoreDataModel.xcdatamodel */,
+			);
+			currentVersion = 44A4C65C1FBB8649006A5AC1 /* CoreDataModel.xcdatamodel */;
+			path = SavedStickerModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 441432981FA7FB0A00235F81 /* Project object */;
 }

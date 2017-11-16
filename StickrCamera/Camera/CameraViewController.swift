@@ -27,8 +27,8 @@ class CameraViewController: UIViewController {
     @IBOutlet weak var containerView: UIView!
     
     @IBOutlet weak var editLabel: UILabel!
-   
-    @IBOutlet weak var optionsButton: UIButton!
+    
+    @IBOutlet weak var moreButton: UIButton!
     
     private let session = AVCaptureSession()
     
@@ -48,37 +48,21 @@ class CameraViewController: UIViewController {
     
     private var previewImageView:UIImageView?
     
-    var previewImage:UIImage?
+    private var previewImage:UIImage?
     
-    private var blackOverlayView:UIView?
+    private var selectedStickerImage:UIImage?
+    
+    private var selectedFilterImage:UIImage?
     
     private var imageOrientation:UIImageOrientation = .right
     
     private let videoDeviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera,.builtInDualCamera],mediaType: .video,position: .unspecified)
     
-    private var bottomCollectionViewConstraint:NSLayoutConstraint?
-    
-    private let editCollectionCellIdentifier = "EditCell"
-    
     private let filterCollectionCellIdentifier = "FilterCell"
     
-    let editButtonImages:[UIImage] = [#imageLiteral(resourceName: "sticker_icon"),#imageLiteral(resourceName: "brightnessIcon"),#imageLiteral(resourceName: "contrast_icon"),#imageLiteral(resourceName: "temp_icon"),#imageLiteral(resourceName: "blur_Icon")]
+    private let addStickerVCSegueIdentifier = "ShowStickerVC"
     
-    private let stickerSegueIdentifier = "ShowStickerVC"
-    
-    private lazy var editControlsCollectionView: UICollectionView = {
-        let flowLayout = UICollectionViewFlowLayout()
-        flowLayout.scrollDirection = .horizontal
-        flowLayout.sectionInset = UIEdgeInsetsMake(0, 10, 0, 0)
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
-        collectionView.showsHorizontalScrollIndicator = false
-        collectionView.backgroundColor = .white
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.isHidden = true
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        return collectionView
-    }()
+    private let filterVCSegueIdentifier = "ShowFilterVC"
     
     private lazy var cancelButton:UIButton = {
         let button = UIButton(type: .system)
@@ -102,32 +86,50 @@ class CameraViewController: UIViewController {
         return button
     }()
     
-    private lazy var editContainerView:EditContainerView = {
-        let view = EditContainerView(frame: CGRect(x: 0, y: self.view.frame.height - 120, width: self.view.frame.width, height: 120))
-        view.delegate = self
-        return view
+    private lazy var stickerButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Stickers", for: .normal)
+        button.titleLabel!.font = UIFont.boldSystemFont(ofSize: 18)
+        button.tintColor = .black
+        button.setTitleColor(.black, for: .normal)
+        button.setImage(#imageLiteral(resourceName: "sticker_icon"), for: .normal)
+        button.titleEdgeInsets = UIEdgeInsetsMake(0, 3, 0, 0)
+        button.addTarget(self, action: #selector(didTapStickerButton), for: .touchUpInside)
+        button.isHidden = true
+        return button
+    }()
+    
+    private lazy var filterButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Filters", for: .normal)
+        button.titleLabel!.font = UIFont.boldSystemFont(ofSize: 18)
+        button.setImage(#imageLiteral(resourceName: "blur_Icon"), for: .normal)
+        button.tintColor = .black
+        button.setTitleColor(.black, for: .normal)
+        button.addTarget(self, action: #selector(didFilterButton), for: .touchUpInside)
+        button.isHidden = true
+        return button
     }()
     
     private var isRotating = false
     
     private var identity = CGAffineTransform.identity
     
-    private var stickerImageView:UIImageView?
-    
-    private var editSegment = 0
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
-        setupEditingViews()
         requestPhotoAccess()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        self.selectedStickerImage = nil
+        self.selectedFilterImage = nil
     }
     
     private func requestCameraAccess() {
         self.capturePhotoButton.isEnabled = false
         self.switchCameraButton.isEnabled = false
-        
         AVCaptureDevice.requestAccess(for: .video, completionHandler: { (granted) in
             self.isCameraAccessGiven = granted
             if self.isCameraAccessGiven {
@@ -156,10 +158,6 @@ class CameraViewController: UIViewController {
         }
     }
     
-    override var prefersStatusBarHidden: Bool {
-        return true
-    }
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -182,7 +180,6 @@ class CameraViewController: UIViewController {
         default:
             break
         }
-        
         let photoAuthStatus = PHPhotoLibrary.authorizationStatus()
         if photoAuthStatus == .authorized {
             isPhotoLibraryAccessGiven = true
@@ -191,7 +188,6 @@ class CameraViewController: UIViewController {
         } else if photoAuthStatus == .notDetermined {
             requestPhotoAccess()
         }
-        
     }
     
     private func getPhotos() {
@@ -216,94 +212,44 @@ class CameraViewController: UIViewController {
         }
     }
     
-    private func handleStickerGestures() {
-        let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didBeginImageDrag(_:)))
-        panGestureRecognizer.delegate = self
-        stickerImageView?.addGestureRecognizer(panGestureRecognizer)
-        
-        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(didBeginImagePinch(_:)))
-        pinchGesture.delegate = self
-        stickerImageView?.addGestureRecognizer(pinchGesture)
-        
-        let rotationGesture = UIRotationGestureRecognizer(target: self, action: #selector(didBeginImageRotation(_:)))
-        rotationGesture.delegate = self
-        stickerImageView?.addGestureRecognizer(rotationGesture)
-    }
-    
-    @objc
-    private func didBeginImageDrag(_ gesture: UIPanGestureRecognizer) {
-        guard let stickerImageView = self.stickerImageView else {return}
-        let point = gesture.translation(in: previewImageView)
-        if !isRotating {
-            stickerImageView.center = CGPoint(x: stickerImageView.center.x + point.x, y: stickerImageView.center.y + point.y)
-            gesture.setTranslation(.zero, in: previewImageView)
-        }
-        
-    }
-    
-    @objc
-    private func didBeginImagePinch(_ gesture:UIPinchGestureRecognizer) {
-        guard let stickerImageView = self.stickerImageView else {return}
-        if !isRotating {
-            
-            switch gesture.state {
-            case .began:
-                identity = stickerImageView.transform
-            case .changed,.ended:
-                stickerImageView.transform = identity.scaledBy(x: gesture.scale, y: gesture.scale)
-            case .cancelled:
-                break
-            default:
-                break
-            }
-        }
-    }
-    
-    @objc
-    private func didBeginImageRotation(_ gesture: UIRotationGestureRecognizer) {
-        
-        guard let view = gesture.view else {return}
-        stickerImageView?.transform = view.transform.rotated(by: gesture.rotation)
-        gesture.rotation = 0
-        if gesture.state == .changed || gesture.state == .began {
-            isRotating = true
-        }
-        if gesture.state == .ended {
-            isRotating = false
-        }
-    }
     private func saveImageToPhotoLibrary(completionHandler:(Bool)->()) {
-        
-        guard let previewImageView = self.previewImageView, let layer = UIApplication.shared.keyWindow?.layer else {
+        guard let previewImageView = self.previewImageView, let keyWindow = UIApplication.shared.keyWindow else {
             completionHandler(false)
             return
         }
-        blackOverlayView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 40))
-        blackOverlayView?.backgroundColor = .black
-        topContainerView.addSubview(blackOverlayView!)
         
-        self.previewImageView?.frame = CGRect(x: 0, y: -36, width: self.view.frame.width, height: self.view.frame.height - 120)
-        //previewImageView.anchorConstraints(topAnchor: topContainerView.bottomAnchor, topConstant: 0, leftAnchor: cameraView.leftAnchor, leftConstant: 0, rightAnchor: cameraView.rightAnchor, rightConstant: 0, bottomAnchor: containerView.topAnchor, bottomConstant: 0, heightConstant: 0, widthConstant: 0)
-        self.previewImageView?.contentMode = .scaleAspectFill
-        self.previewImageView?.clipsToBounds = true
-
+        let topDarkOverlay = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 60))
+        topDarkOverlay.backgroundColor = .black
+        topContainerView.addSubview(topDarkOverlay)
+        
+        let bottomDarkOverlay = UIView(frame: CGRect(x: 0, y: keyWindow.frame.height - 100, width: view.frame.width, height: 100))
+        bottomDarkOverlay.backgroundColor = .black
+        keyWindow.addSubview(bottomDarkOverlay)
+        
+        previewImageView.frame = CGRect(x: 0, y: -40, width: keyWindow.frame.width, height: keyWindow.frame.height - 100 - 40)
+        
         let scale = UIScreen.main.scale
-        UIGraphicsBeginImageContextWithOptions(previewImageView.layer.frame.size, false, scale); // reconsider size property for your screenshot
-        layer.render(in: UIGraphicsGetCurrentContext()!)
-        print(previewImageView.layer.frame.size)
+        UIGraphicsBeginImageContextWithOptions(previewImageView.bounds.size, false, scale) // reconsider size property for your screenshot
+        keyWindow.layer.render(in: UIGraphicsGetCurrentContext()!)
+        print(previewImageView.layer.frame.size,
+              previewImageView.bounds.size)
         let screenshot = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         UIImageWriteToSavedPhotosAlbum(screenshot!, self, nil, nil)
         
-        self.previewImageView?.removeFromSuperview()
-        blackOverlayView?.removeFromSuperview()
-        editControlsCollectionView.isHidden = true
-        bottomCollectionViewConstraint?.constant = 120
-        removeEditContainer()
+        previewImageView.removeFromSuperview()
+        topDarkOverlay.removeFromSuperview()
+        bottomDarkOverlay.removeFromSuperview()
         completionHandler(true)
     }
     
     @IBAction func toggleFrontOrBackCamera(_ sender: Any) {
+        UIView.animate(withDuration: 0.5, animations: {
+            self.switchCameraButton.transform =  CGAffineTransform(rotationAngle: CGFloat.pi)
+        }, completion: { _ in
+            self.switchCameraButton.transform = CGAffineTransform(rotationAngle: 0)
+        })
+        
         sessionQueue.async {
             let currentVideoDevice = self.cameraDeviceInput.device
             let currentPosition = currentVideoDevice.position
@@ -344,7 +290,6 @@ class CameraViewController: UIViewController {
                         self.cameraDeviceInput = videoDeviceInput
                         
                         NotificationCenter.default.removeObserver(self, name: .AVCaptureDeviceSubjectAreaDidChange, object: currentVideoDevice)
-                        
                         NotificationCenter.default.addObserver(self, selector: #selector(self.subjectAreaDidChange), name: .AVCaptureDeviceSubjectAreaDidChange, object: videoDeviceInput.device)
                         
                     } else {
@@ -397,7 +342,7 @@ class CameraViewController: UIViewController {
             if session.canAddInput(videoDeviceInput) {
                 session.addInput(videoDeviceInput)
                 self.cameraDeviceInput = videoDeviceInput
-
+                
                 previewLayer = AVCaptureVideoPreviewLayer(session: session)
                 previewLayer?.videoGravity = .resizeAspectFill
                 DispatchQueue.main.async {
@@ -432,16 +377,6 @@ class CameraViewController: UIViewController {
         }
         handlePhotoCapture()
         showEditingTools()
-    }
-    
-    private func showEditingTools() {
-        cancelButton.isHidden = false
-        optionsButton.isHidden = true
-        editLabel.isHidden = false
-        saveButton.isHidden = false
-        flashButton.isHidden = true
-        editControlsCollectionView.isHidden = false
-        bottomCollectionViewConstraint?.constant = 0
     }
     
     private func handlePhotoCapture() {
@@ -496,7 +431,6 @@ class CameraViewController: UIViewController {
                     currentDevice.exposurePointOfInterest = devicePoint
                     currentDevice.exposureMode = exposureMode
                 }
-                
                 currentDevice.isSubjectAreaChangeMonitoringEnabled = monitorSubjectAreaChange
                 currentDevice.unlockForConfiguration()
             }
@@ -511,6 +445,11 @@ class CameraViewController: UIViewController {
         let imagePickerController = UIImagePickerController()
         imagePickerController.delegate = self
         present(imagePickerController, animated: true, completion: nil)
+        UIView.animate(withDuration: 0.45, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            self.photoCollectionImageView.transform = CGAffineTransform(scaleX: 0.85, y: 0.85)
+        }) { (_) in
+            self.photoCollectionImageView.transform = CGAffineTransform(scaleX: 1, y: 1)
+        }
     }
     
     @IBAction func flashButtonTapped(_ sender: Any) {
@@ -522,10 +461,60 @@ class CameraViewController: UIViewController {
         }
     }
     
-    @IBAction func optionsButtonTapped(_ sender: UIButton) {
-    print("options tapped")
-   
+    @IBAction func moreButtonTapped(_ sender: UIButton) {
+        let moreVC = MoreViewController()
+        present(moreVC, animated: true, completion: nil)
     }
+    
+    @objc
+    private func handleSave() {
+        saveImageToPhotoLibrary(completionHandler: { (success) in
+            if success {
+                print("successfully saved then show alert")
+                handleCancel()
+            } else {
+                print("error saving")
+            }
+        })
+    }
+    
+    private func showEditingTools() {
+        cancelButton.isHidden = false
+        moreButton.isHidden = true
+        editLabel.isHidden = false
+        saveButton.isHidden = false
+        flashButton.isHidden = true
+        capturePhotoButton.isHidden = true
+        switchCameraButton.isHidden = true
+        photoCollectionImageView.isHidden = true
+        setupEditingViews()
+    }
+    
+    @objc
+    private func handleCancel() {
+        cancelButton.isHidden = true
+        moreButton.isHidden = false
+        flashButton.isHidden = false
+        saveButton.isHidden = true
+        editLabel.isHidden = true
+        capturePhotoButton.isHidden = false
+        switchCameraButton.isHidden = false
+        photoCollectionImageView.isHidden = false
+        stickerButton.isHidden = true
+        filterButton.isHidden = true
+        previewImageView?.removeFromSuperview()
+    }
+    
+    @objc
+    private func didTapStickerButton() {
+        performSegue(withIdentifier: addStickerVCSegueIdentifier, sender: self)
+    }
+    
+    @objc
+    private func didFilterButton() {
+        performSegue(withIdentifier: filterVCSegueIdentifier, sender: self)
+    }
+    
     private func setupViews() {
         photoCollectionImageView.layer.cornerRadius = 5
         photoCollectionImageView.layer.masksToBounds = true
@@ -542,40 +531,15 @@ class CameraViewController: UIViewController {
     }
     
     private func setupEditingViews() {
-        editControlsCollectionView.register(EditCollectionViewCell.self, forCellWithReuseIdentifier: editCollectionCellIdentifier)
-        containerView.addSubview(editControlsCollectionView)
+        containerView.addSubview(stickerButton)
+        stickerButton.anchorConstraints(topAnchor: nil, topConstant: 0, leftAnchor: containerView.leftAnchor, leftConstant: 30, rightAnchor: nil, rightConstant: 0, bottomAnchor: nil, bottomConstant: 0, heightConstant: 0, widthConstant: 110)
+        stickerButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
+        stickerButton.isHidden = false
         
-        editControlsCollectionView.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 0).isActive = true
-        editControlsCollectionView.rightAnchor.constraint(equalTo: containerView.rightAnchor, constant: 0).isActive = true
-        
-        bottomCollectionViewConstraint = editControlsCollectionView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 120)
-        bottomCollectionViewConstraint?.isActive = true
-        editControlsCollectionView.heightAnchor.constraint(equalToConstant: 100).isActive = true
-    }
-     @objc
-     private func handleCancel() {
-        cancelButton.isHidden = true
-        optionsButton.isHidden = false
-        flashButton.isHidden = false
-        saveButton.isHidden = true
-        editLabel.isHidden = true
-        previewImageView?.removeFromSuperview()
-        blackOverlayView?.removeFromSuperview()
-        editControlsCollectionView.isHidden = true
-        bottomCollectionViewConstraint?.constant = 120
-        removeEditContainer()
-    }
-    
-    
-    @objc
-    private func handleSave() {
-        saveImageToPhotoLibrary(completionHandler: { (success) in
-            if success {
-                print("successfully saved")
-            } else {
-                print("error saving")
-            }
-        })
+        containerView.addSubview(filterButton)
+        filterButton.anchorConstraints(topAnchor: nil, topConstant: 0, leftAnchor: nil, leftConstant: 0, rightAnchor: containerView.rightAnchor, rightConstant: -30, bottomAnchor: nil, bottomConstant: 0, heightConstant: 0, widthConstant: 110)
+        filterButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
+        filterButton.isHidden = false
     }
 }
 
@@ -587,31 +551,58 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
         
         let previewImage = UIImage(data: jpegData)?.cgImage
         let finalImage = UIImage(cgImage: previewImage!, scale: 1.0, orientation: imageOrientation)
-  
+        
         previewImageView = UIImageView(image: finalImage)
         previewImageView?.contentMode = .scaleAspectFill
         previewImageView?.clipsToBounds = true
-
+        
         cameraView.addSubview(previewImageView!)
         previewImageView?.anchorConstraints(topAnchor: cameraView.topAnchor, topConstant: 0, leftAnchor: cameraView.leftAnchor, leftConstant: 0, rightAnchor: cameraView.rightAnchor, rightConstant: 0, bottomAnchor: containerView.topAnchor, bottomConstant: 0, heightConstant: 0, widthConstant: 0)
         self.previewImage = finalImage
     }
     
     func photoOutput(_ output: AVCapturePhotoOutput, willCapturePhotoFor resolvedSettings: AVCaptureResolvedPhotoSettings) {
-
-//        DispatchQueue.main.async {
-//            UIView.animate(withDuration: 0.1) {
-//                self.previewLayer!.opacity = 0
-//            }
-//        }
         
-         previewLayer!.backgroundColor = UIColor.black.cgColor
-         previewLayer!.opacity = 0
-        UIView.animate(withDuration: 0.25, animations: {
-            self.previewLayer!.opacity = 1
-        }) { (success) in
-            self.previewLayer!.opacity = 1
-//            darkOverlayView.removeFromSuperview()
+        //         previewLayer!.backgroundColor = UIColor.black.cgColor
+        //         previewLayer!.opacity = 0
+        //        UIView.animate(withDuration: 0.25, animations: {
+        //            self.previewLayer!.opacity = 1
+        //        }) { (success) in
+        //            self.previewLayer!.opacity = 1
+        ////            darkOverlayView.removeFromSuperview()
+        //        }
+    }
+}
+
+extension CameraViewController {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == filterVCSegueIdentifier {
+            if let destinationVC = segue.destination as? FilterViewController {
+                destinationVC.delegate = self
+                guard let image = previewImage else {
+                    print("preview image is nil")
+                    return
+                }
+                if let selectedStickerImage = selectedStickerImage {
+                    destinationVC.image = selectedStickerImage
+                } else {
+                    destinationVC.image = image
+                }
+            }
+            
+        } else if segue.identifier == addStickerVCSegueIdentifier {
+            if let destinationVC = segue.destination as? AddStickerViewController {
+                guard let image = previewImage else {
+                    print("preview image is nil")
+                    return
+                }
+                if let selectedFilterImage = selectedFilterImage {
+                    destinationVC.image = selectedFilterImage
+                } else {
+                    destinationVC.image = image
+                }
+                destinationVC.delegate = self
+            }
         }
     }
 }
@@ -628,9 +619,9 @@ extension CameraViewController:UIImagePickerControllerDelegate, UINavigationCont
         }
         guard let image = selectedImage else { return }
         
-        blackOverlayView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 40))
-        blackOverlayView?.backgroundColor = .black
-        cameraView.addSubview(blackOverlayView!)
+        //        blackOverlayView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 40))
+        //        blackOverlayView?.backgroundColor = .black
+        //        cameraView.addSubview(blackOverlayView!)
         
         previewImageView = UIImageView(image: image)
         previewImageView?.contentMode = .scaleAspectFill
@@ -645,109 +636,19 @@ extension CameraViewController:UIImagePickerControllerDelegate, UINavigationCont
     }
 }
 
-extension CameraViewController:UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
-    
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 9
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: editCollectionCellIdentifier, for: indexPath) as! EditCollectionViewCell
-//        if let image = previewImage {
-//            cell.imageView.image = image
-//        }
-        return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        let cell = cell as! EditCollectionViewCell
-        if let image = previewImage {
-            cell.imageView.image = image
-        }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print(indexPath.row, "is selelcted")
-        switch indexPath.row {
-        case 0:
-            showStickerVC()
-        case 1:
-            DispatchQueue.global(qos: .background).async {
-                let filterImage = ExposureFilter.exposureFilter(self.previewImage!)
-                DispatchQueue.main.async {
-                    self.previewImageView?.image = filterImage
-                }
-            }
-            editSegment = 1
-        case 2:
-            let sepiaFilter = Filter(filterName: .sepia)
-            sepiaFilter.inputImage(self.previewImage!)
-            DispatchQueue.main.async {
-                self.previewImageView?.image = sepiaFilter.outputImage()
-            }
-        case 3:
-            editSegment = 3
-        case 4:
-            editSegment = 4
-        default:
-            break
-        }
-        
-    }
-    
-    private func showStickerVC() {
-        let stickerVC = StickerViewController(collectionViewLayout: UICollectionViewFlowLayout())
-        stickerVC.delegate = self
-        let navVC = UINavigationController(rootViewController: stickerVC)
-        present(navVC, animated: true, completion: nil)
-        
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = (self.view.frame.width / 5) - 5
-        print(width)
-        return CGSize(width: 70, height: 70)
-    }
-    
-    private func showEditContainer() {
-        view.addSubview(editContainerView)
-    }
-    
-    private func removeEditContainer() {
-        editContainerView.removeFromSuperview()
-    }
-}
-
-extension CameraViewController: EditViewDelegate {
-    func sliderValueDidChange(_ value: Float) {
-    
-    }
-    
-    func didTapDoneButton() {
-        removeEditContainer()
-    }
-    
-    func didTapCancelButton() {
-        removeEditContainer()
-        self.previewImageView?.image = previewImage!
-        self.editContainerView.editSlider.value = 0
-    }
-
-}
-
-extension CameraViewController: StickerViewDelegate {
+extension CameraViewController: AddStickerViewDelegate {
     
     func didSelectSticker(_ image: UIImage) {
-        self.stickerImageView = UIImageView(image: image)
-        self.view.addSubview(stickerImageView!)
-        self.stickerImageView?.isUserInteractionEnabled = true
-        self.stickerImageView?.frame = CGRect(origin: previewImageView!.center, size: CGSize(width: 150, height: 150))
-        previewImageView?.addSubview(stickerImageView!)
-        handleStickerGestures()
+        previewImageView?.image = image
+        self.selectedStickerImage = image
+    }
+}
+
+extension CameraViewController: FilterViewControllerDelegate {
+    
+    func didChooseFilter(_ image: UIImage) {
+        previewImageView?.image = image
+        selectedFilterImage = image
     }
 }
 

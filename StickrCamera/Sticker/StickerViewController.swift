@@ -8,9 +8,10 @@
 
 import UIKit
 
-protocol StickerViewDelegate: class {
-    func didSelectSticker(_ image:UIImage)
+protocol ChooseStickerDelegate: class {
+    func didChooseSticker(_ image:UIImage)
 }
+
 
 class StickerViewController: UICollectionViewController {
     
@@ -18,14 +19,17 @@ class StickerViewController: UICollectionViewController {
     
     private let stickerHeaderCellIdentier = "StickerHeaderCell"
     
-    weak var delegate:StickerViewDelegate?
+    private var travelStickers = [Sticker]()
     
-    var stickerArray = [Sticker]()
-    var secondStickerArray = [Sticker]()
+    private var memeStickers = [Sticker]()
     
-    var currentSegment = 0
+    private var currentSegment = 0
     
     private var isInitialLoad = true
+    
+    var imageToEdit:UIImage?
+    
+    weak var delegate:ChooseStickerDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,21 +48,9 @@ class StickerViewController: UICollectionViewController {
         navigationItem.rightBarButtonItem = rightBarButtonItem
         navigationItem.title = "Stickers"
         
-        let sticker1 = Sticker(image: #imageLiteral(resourceName: "sticker"), title: "Send Noods", isPremium: false, isFavourite: false)
-        let sticker2 = Sticker(image: #imageLiteral(resourceName: "sticker2"), title: "1-800-STFU", isPremium: false, isFavourite: false)
-        let sticker3 = Sticker(image: #imageLiteral(resourceName: "sticker3"), title: "Cherry Flav", isPremium: false, isFavourite: false)
-        let sticker4 = Sticker(image: #imageLiteral(resourceName: "sticker4"), title: "Wierdo", isPremium: false, isFavourite: false)
-        let sticker5 = Sticker(image: #imageLiteral(resourceName: "sticker5"), title: "Later Turds", isPremium: false, isFavourite: false)
-        let sticker6 = Sticker(image: #imageLiteral(resourceName: "sticker6"), title: "Later Nerds", isPremium: false, isFavourite: false)
-        stickerArray = [sticker1,sticker2,sticker3,sticker4,sticker5, sticker6]
+        travelStickers =  CreateSticker.travelStickers()
+        memeStickers = CreateSticker.memeStickers()
         
-        let asticker1 = Sticker(image: #imageLiteral(resourceName: "aStick1"), title: "Chilling dud", isPremium: false, isFavourite: false)
-        let asticker2 = Sticker(image: #imageLiteral(resourceName: "aStick2"), title: "Red Hot Pepper", isPremium: false, isFavourite: false)
-        let asticker3 = Sticker(image: #imageLiteral(resourceName: "aStick3"), title: "Doggy dog Flav", isPremium: false, isFavourite: false)
-        let asticker4 = Sticker(image: #imageLiteral(resourceName: "aStick4"), title: "NY", isPremium: false, isFavourite: false)
-        let asticker5 = Sticker(image: #imageLiteral(resourceName: "aStick5"), title: "Honolulu", isPremium: false, isFavourite: false)
-        let asticker6 = Sticker(image: #imageLiteral(resourceName: "sticker6"), title: "Later Nerds", isPremium: false, isFavourite: false)
-        secondStickerArray = [asticker1,asticker2,asticker3,asticker4,asticker5, asticker6]
     }
 
     @objc
@@ -81,9 +73,9 @@ class StickerViewController: UICollectionViewController {
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if currentSegment == 0 {
-            return stickerArray.count
+            return travelStickers.count
         } else if currentSegment == 1 {
-            return secondStickerArray.count
+            return memeStickers.count
         } else {
             return 0
         }
@@ -94,15 +86,10 @@ class StickerViewController: UICollectionViewController {
         
         switch currentSegment {
         case 0:
-            let image = stickerArray[indexPath.item].image
-            let title = stickerArray[indexPath.item].title
-            cell.stickerTitle.text = title
-            cell.stickerImageView.image = image
+            let travelSticker = travelStickers[indexPath.item]
+            cell.sticker = travelSticker
         case 1:
-            let image = secondStickerArray[indexPath.item].image
-            let title = secondStickerArray[indexPath.item].title
-            cell.stickerTitle.text = title
-            cell.stickerImageView.image = image
+            cell.sticker = memeStickers[indexPath.item]
         default:
             break
         }
@@ -114,14 +101,14 @@ class StickerViewController: UICollectionViewController {
         var image:UIImage?
         switch currentSegment {
         case 0:
-             image = stickerArray[indexPath.item].image
+             image = travelStickers[indexPath.item].image
         case 1:
-             image = secondStickerArray[indexPath.item].image
+             image = memeStickers[indexPath.item].image
         default:
             break
         }
-        guard image != nil else {return}
-        delegate?.didSelectSticker(image!)
+        guard let stickerImage = image else {return}
+        delegate?.didChooseSticker(stickerImage)
         dismiss(animated: true, completion: nil)
 
     }

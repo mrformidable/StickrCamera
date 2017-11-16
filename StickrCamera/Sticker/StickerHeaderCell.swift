@@ -25,7 +25,6 @@ class StickerHeaderCell: UICollectionViewCell {
     
     @objc
     private func didChangeSegment(_ sender:UISegmentedControl) {
-        //stickerSegmentControl.selectedSegmentIndex = sender.selectedSegmentIndex
         delegate?.didTapSegment(sender.selectedSegmentIndex)
     }
     
@@ -34,10 +33,7 @@ class StickerHeaderCell: UICollectionViewCell {
         addSubview(stickerSegmentControl)
         stickerSegmentControl.anchorConstraints(topAnchor: topAnchor, topConstant: 5, leftAnchor: leftAnchor, leftConstant: 0, rightAnchor: rightAnchor, rightConstant: 0, bottomAnchor: nil, bottomConstant: 0, heightConstant: 29, widthConstant: 0)
         stickerSegmentControl.insertSegment(withTitle: "Travel", at: 0, animated: true)
-        stickerSegmentControl.insertSegment(withTitle: "Cartoons", at: 1, animated: true)
-        stickerSegmentControl.insertSegment(withTitle: "Celebrities", at: 2, animated: true)
-        stickerSegmentControl.insertSegment(withTitle: "Memes", at: 3, animated: true)
-        
+        stickerSegmentControl.insertSegment(withTitle: "Memes", at: 1, animated: true)
     }
     
     required init?(coder aDecoder: NSCoder) {

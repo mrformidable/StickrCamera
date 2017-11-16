@@ -8,6 +8,45 @@
 
 import UIKit
 
+public func resizeImage(image: UIImage, ratio:CGFloat) -> UIImage {
+    let resizedSize = CGSize(width: Int(image.size.width * ratio), height: Int(image.size.height * ratio))
+    UIGraphicsBeginImageContext(resizedSize)
+    image.draw(in: CGRect(x: 0, y: 0, width: resizedSize.width, height: resizedSize.height))
+    let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
+    UIGraphicsEndImageContext()
+    return resizedImage!
+}
+
+public func getImageFromRendering(with imageView:UIImageView, controllerView:UIView, topContainerView:UIView) -> UIImage? {
+    
+    guard let keyWindow = UIApplication.shared.keyWindow else {
+        //completionHandler(false)
+        return nil
+    }
+    let blackOverlayView = UIView(frame: CGRect(x: 0, y: 0, width: keyWindow.frame.width, height: 60))
+    blackOverlayView.backgroundColor = .black
+
+    let bottomDarkOverlay = UIView(frame: CGRect(x: 0, y: keyWindow.frame.height - 100, width: keyWindow.frame.width, height: 100))
+    bottomDarkOverlay.backgroundColor = .black
+    keyWindow.addSubview(bottomDarkOverlay)
+    
+    
+    imageView.frame = CGRect(x: 0, y: 0, width: keyWindow.frame.width, height: keyWindow.frame.height - 100)
+    imageView.contentMode = .scaleAspectFill
+    imageView.clipsToBounds = true
+
+    let scale = UIScreen.main.scale
+    UIGraphicsBeginImageContextWithOptions(imageView.bounds.size, false, scale); // reconsider size property for your screenshot
+    keyWindow.layer.render(in: UIGraphicsGetCurrentContext()!)
+    let screenshot = UIGraphicsGetImageFromCurrentImageContext()
+    UIGraphicsEndImageContext()
+    
+    blackOverlayView.removeFromSuperview()
+    bottomDarkOverlay.removeFromSuperview()
+    
+    return screenshot
+}
+
 extension UIView {
     
     func anchorConstraints(topAnchor: NSLayoutYAxisAnchor?, topConstant:CGFloat, leftAnchor: NSLayoutXAxisAnchor?,leftConstant:CGFloat ,rightAnchor:NSLayoutXAxisAnchor?, rightConstant: CGFloat,bottomAnchor: NSLayoutYAxisAnchor?, bottomConstant: CGFloat, heightConstant:CGFloat, widthConstant:CGFloat) {

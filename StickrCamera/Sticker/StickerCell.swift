@@ -7,8 +7,19 @@
 //
 
 import UIKit
+import CoreData
 
 class StickerCell: UICollectionViewCell {    
+    
+    var sticker:Sticker? {
+        didSet {
+            guard let _sticker = sticker else {
+                return
+            }
+            stickerTitle.text = _sticker.title
+            stickerImageView.image = _sticker.image
+        }
+    }
     
     let stickerImageView:UIImageView = {
         let imageView = UIImageView()
@@ -33,9 +44,42 @@ class StickerCell: UICollectionViewCell {
         return button
     }()
     
+    private lazy var lockButton:UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(#imageLiteral(resourceName: "lock_icon"), for: .normal)
+        button.addTarget(self, action: #selector(didTapLockedButton), for: .touchUpInside)
+        return button
+    }()
+    
     @objc
     private func didTapLikeButton() {
-        print("like tapped")
+        saveStickerToCoreData()
+    }
+    
+    @objc
+    private func didTapLockedButton() {
+        print("tapped locked")
+    }
+    
+    private func saveStickerToCoreData() {
+        guard let managedObjContext = (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer.viewContext else {
+            return
+        }
+    
+        guard let sticker = sticker else {return}
+        let stickerImage = UIImageJPEGRepresentation(sticker.image, 1.0)!
+        let savedSticker = SavedSticker(context: managedObjContext)
+        savedSticker.stickerTitle = sticker.title
+        savedSticker.stickerImage = stickerImage
+        savedSticker.isPremium = sticker.isPremium
+        savedSticker.isFavourite = sticker.isFavourite
+
+        do {
+            try managedObjContext.save()
+            print("saved, show alert here also")
+        } catch {
+            print(error.localizedDescription)
+        }
     }
     
     private func setupViews() {
@@ -43,17 +87,19 @@ class StickerCell: UICollectionViewCell {
         addSubview(stickerImageView)
         addSubview(stickerTitle)
         addSubview(likeButton)
+        
+        stickerImageView.addSubview(lockButton)
         let height = self.frame.size.height * 3/4
-        print(height)
         
         stickerImageView.anchorConstraints(topAnchor: topAnchor, topConstant: 2, leftAnchor: leftAnchor, leftConstant: 0, rightAnchor: rightAnchor, rightConstant: 0, bottomAnchor: nil, bottomConstant: 0, heightConstant: height, widthConstant: 0)
         
-        stickerTitle.anchorConstraints(topAnchor: stickerImageView.bottomAnchor, topConstant: 0, leftAnchor: leftAnchor, leftConstant: 0, rightAnchor: likeButton.leftAnchor, rightConstant: 0, bottomAnchor: bottomAnchor, bottomConstant: 0, heightConstant: 0, widthConstant: 0)
+        stickerTitle.anchorConstraints(topAnchor: stickerImageView.bottomAnchor, topConstant: 0, leftAnchor: leftAnchor, leftConstant: 2, rightAnchor: likeButton.leftAnchor, rightConstant: 0, bottomAnchor: bottomAnchor, bottomConstant: 0, heightConstant: 0, widthConstant: 0)
         
-        likeButton.anchorConstraints(topAnchor: nil, topConstant: 0, leftAnchor: nil, leftConstant: 0, rightAnchor: rightAnchor, rightConstant: -2, bottomAnchor: nil, bottomConstant: 0, heightConstant: 30, widthConstant: 30)
+        likeButton.anchorConstraints(topAnchor: nil, topConstant: 0, leftAnchor: nil, leftConstant: 0, rightAnchor: rightAnchor, rightConstant: -2, bottomAnchor: nil, bottomConstant: 0, heightConstant: 40, widthConstant: 40)
         likeButton.centerYAnchor.constraint(equalTo: stickerTitle.centerYAnchor, constant: 0).isActive = true
+        
+        lockButton.anchorConstraints(topAnchor: stickerImageView.topAnchor, topConstant: 5, leftAnchor: nil, leftConstant: 0, rightAnchor: stickerImageView.rightAnchor, rightConstant: -5, bottomAnchor: nil, bottomConstant: 0, heightConstant: 26, widthConstant: 26)
     }
-    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -63,7 +109,7 @@ class StickerCell: UICollectionViewCell {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-  
+    
 }
 
 

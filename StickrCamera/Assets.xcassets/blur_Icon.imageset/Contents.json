@@ -2,12 +2,11 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "blur_Icon.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "blur_Icon@2x.png",
+      "filename" : "blur_Icon.png",
       "scale" : "2x"
     },
     {
