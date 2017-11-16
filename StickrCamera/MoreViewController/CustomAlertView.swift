@@ -14,11 +14,18 @@ protocol CustomAlertViewDelegate: class {
 
 protocol CustomMessageViewDelegate: class {
     func didTapRemoveAdsButton()
+    func didTapRestorePurchasesButton()
+
+}
+
+protocol CustomMessageCameraVCDelegate: class {
+    func didTapDismissButton()
+    func didTapOpenSettingsButton()
 }
 
 class CustomAlertView:UIView {
-   
-     fileprivate lazy var containerView: UIView = {
+    
+    fileprivate lazy var containerView: UIView = {
         let containerView = UIView()
         containerView.backgroundColor = .white
         containerView.layer.cornerRadius = 10
@@ -51,20 +58,20 @@ class CustomAlertView:UIView {
         return backgroundView
     }()
     
-     lazy var alertTitleLabel:UILabel = {
+    lazy var alertTitleLabel:UILabel = {
         let label = UILabel()
         let rationToSubtract =  (40 / frame.width) * frame.width
         label.frame = CGRect(x: 20, y: 4
             , width: self.containerView.frame.width - rationToSubtract, height: 230)
-        label.text = "Upgrading to a premium account allows you to unlock and use all stickers. Ads are also removed so you can enjoy the app without any interuptions."
+        label.text = "Upgrading to a premium account allows you to unlock and use all stickers forever. Ads are also removed so you can enjoy the app without any interuptions."
         label.textAlignment = .center
         let fontSize = fontSizeToUse(for: frame.width)
         label.font = UIFont.boldSystemFont(ofSize: fontSize)
         label.numberOfLines = 0
         return label
     }()
- 
-     lazy var actionButton:UIButton = {
+    
+    lazy var actionButton:UIButton = {
         let button = UIButton()
         let rationToSubtract =  (40 / frame.width) * frame.width
         let height:CGFloat = frame.width * 0.13333
@@ -92,12 +99,12 @@ class CustomAlertView:UIView {
     }()
     
     weak var delegate: CustomAlertViewDelegate?
- 
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupAlert()
     }
-
+    
     func fontSizeToUse(for viewFrame:CGFloat) -> CGFloat {
         var fontSize:CGFloat = 16
         switch viewFrame {
@@ -120,7 +127,7 @@ class CustomAlertView:UIView {
         containerView.addSubview(alertTitleLabel)
         containerView.addSubview(actionButton)
         containerView.addSubview(cancelButton)
-
+        
         UIView.animate(withDuration: 0.4, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
             self.backgroundView.alpha = 1
             self.containerView.center.y = self.center.y
@@ -135,7 +142,8 @@ class CustomAlertView:UIView {
         removeAlert()
     }
     @objc fileprivate func unlockButtonTapped(){
-       delegate?.didTapUnlockPremiumButton()
+        delegate?.didTapUnlockPremiumButton()
+        removeAlert()
     }
     
     private func removeAlert() {
@@ -217,11 +225,11 @@ class CustomMessageBox: UIView {
         button.setAttributedTitle(attributedTitle, for: .normal)
         button.layer.cornerRadius = height / 2
         button.backgroundColor = .black
-        button.addTarget(self, action: #selector(didTapRemoveButton), for: .touchUpInside)
+        button.addTarget(self, action: #selector(didTapActionButton), for: .touchUpInside)
         return button
     }()
     
-    fileprivate lazy var cancelButton:UIButton = {
+     lazy var cancelButton:UIButton = {
         let button = UIButton()
         button.frame = CGRect(x: 20, y: self.actionButton.frame.origin.y + self.actionButton.frame.height + 10 , width: self.containerView.frame.width - 50, height: 30)
         let attributes = [NSAttributedStringKey.font:UIFont.boldSystemFont(ofSize: 15), NSAttributedStringKey.foregroundColor:UIColor.lightGray]
@@ -233,6 +241,8 @@ class CustomMessageBox: UIView {
     
     weak var delegate: CustomMessageViewDelegate?
     
+    weak var messageViewCameraVCDelegate:CustomMessageCameraVCDelegate?
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupAlert()
@@ -274,8 +284,22 @@ class CustomMessageBox: UIView {
     @objc fileprivate func cancelButtonTapped(){
         removeAlert()
     }
-    @objc fileprivate func didTapRemoveButton(){
-        delegate?.didTapRemoveAdsButton()
+    @objc fileprivate func didTapActionButton(){
+        guard let buttonTitle = actionButton.titleLabel?.text else {
+            return
+        }
+        
+        if buttonTitle == "Remove Ads" {
+            delegate?.didTapRemoveAdsButton()
+        } else if buttonTitle == "Restore Purchases" {
+            delegate?.didTapRestorePurchasesButton()
+        } else if buttonTitle == "Okay Done" {
+            messageViewCameraVCDelegate?.didTapDismissButton()
+        } else if buttonTitle == "Open Settings" {
+            messageViewCameraVCDelegate?.didTapOpenSettingsButton()
+        }
+        
+        removeAlert()
     }
     
     private func removeAlert() {

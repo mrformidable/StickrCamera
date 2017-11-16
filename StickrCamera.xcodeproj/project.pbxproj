@@ -17,12 +17,11 @@
 		4419D1881FB5339B00EFECC2 /* FilterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4419D1871FB5339B00EFECC2 /* FilterCell.swift */; };
 		4419D18C1FB57ED300EFECC2 /* AddStickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4419D18B1FB57ED300EFECC2 /* AddStickerViewController.swift */; };
 		4419D18E1FB67AC100EFECC2 /* AddStickerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4419D18D1FB67AC100EFECC2 /* AddStickerCell.swift */; };
-		441E1F8C1FB1699400938C2D /* SavedStickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 441E1F8B1FB1699400938C2D /* SavedStickerViewController.swift */; };
-		441E1F8F1FB16FC400938C2D /* SavedStickerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 441E1F8E1FB16FC400938C2D /* SavedStickerCell.swift */; };
 		442A3F421FABCBBE00E2EDCB /* EditFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 442A3F411FABCBBE00E2EDCB /* EditFilters.swift */; };
 		442A3F471FABE6B000E2EDCB /* StickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 442A3F461FABE6B000E2EDCB /* StickerViewController.swift */; };
-		44A4C65D1FBB8649006A5AC1 /* SavedStickerModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 44A4C65B1FBB8649006A5AC1 /* SavedStickerModel.xcdatamodeld */; };
-		44A4C65F1FBBE9C2006A5AC1 /* StickerMO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A4C65E1FBBE9C2006A5AC1 /* StickerMO.swift */; };
+		4472A3311FBD1AEF00C1663B /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4472A3301FBD1AEF00C1663B /* StoreKit.framework */; };
+		4472A3331FBD1D6300C1663B /* IAPHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4472A3321FBD1D6200C1663B /* IAPHelper.swift */; };
+		4472A3351FBD1D6B00C1663B /* IAPProducts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4472A3341FBD1D6B00C1663B /* IAPProducts.swift */; };
 		44ADD73D1FAC3733004A0230 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44ADD73C1FAC3733004A0230 /* Helpers.swift */; };
 		44BE2CFD1FAC1C8900FD812B /* StickerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44BE2CFC1FAC1C8900FD812B /* StickerCell.swift */; };
 		44CCDF251FAE3B0F00B7BA68 /* Sticker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44CCDF241FAE3B0F00B7BA68 /* Sticker.swift */; };
@@ -59,12 +58,11 @@
 		4419D1871FB5339B00EFECC2 /* FilterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCell.swift; sourceTree = "<group>"; };
 		4419D18B1FB57ED300EFECC2 /* AddStickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddStickerViewController.swift; sourceTree = "<group>"; };
 		4419D18D1FB67AC100EFECC2 /* AddStickerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddStickerCell.swift; sourceTree = "<group>"; };
-		441E1F8B1FB1699400938C2D /* SavedStickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedStickerViewController.swift; sourceTree = "<group>"; };
-		441E1F8E1FB16FC400938C2D /* SavedStickerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedStickerCell.swift; sourceTree = "<group>"; };
 		442A3F411FABCBBE00E2EDCB /* EditFilters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditFilters.swift; sourceTree = "<group>"; };
 		442A3F461FABE6B000E2EDCB /* StickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerViewController.swift; sourceTree = "<group>"; };
-		44A4C65C1FBB8649006A5AC1 /* CoreDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoreDataModel.xcdatamodel; sourceTree = "<group>"; };
-		44A4C65E1FBBE9C2006A5AC1 /* StickerMO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerMO.swift; sourceTree = "<group>"; };
+		4472A3301FBD1AEF00C1663B /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		4472A3321FBD1D6200C1663B /* IAPHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPHelper.swift; sourceTree = "<group>"; };
+		4472A3341FBD1D6B00C1663B /* IAPProducts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPProducts.swift; sourceTree = "<group>"; };
 		44ADD73C1FAC3733004A0230 /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		44BE2CFC1FAC1C8900FD812B /* StickerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerCell.swift; sourceTree = "<group>"; };
 		44CCDF241FAE3B0F00B7BA68 /* Sticker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sticker.swift; sourceTree = "<group>"; };
@@ -81,6 +79,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4472A3311FBD1AEF00C1663B /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -109,6 +108,7 @@
 				441432A21FA7FB0A00235F81 /* StickrCamera */,
 				441432B71FA7FB0A00235F81 /* StickrCameraUITests */,
 				441432A11FA7FB0A00235F81 /* Products */,
+				4472A32D1FBD194700C1663B /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -127,17 +127,15 @@
 				442A3F431FABE65400E2EDCB /* Camera */,
 				442A3F441FABE67100E2EDCB /* EditView */,
 				442A3F451FABE68200E2EDCB /* Sticker */,
-				441E1F8D1FB16B5D00938C2D /* SavedStickers */,
-				44ADD73C1FAC3733004A0230 /* Helpers.swift */,
 				4419D18A1FB57EAC00EFECC2 /* FiltersViewController */,
 				44088BB01FBA3FBC005AB1EB /* AddStickers */,
-				441432A71FA7FB0A00235F81 /* Main.storyboard */,
 				44F1DF0C1FBAAE23004F56A1 /* MoreViewController */,
 				44F1DF0B1FBAAE14004F56A1 /* CustomAnimation */,
+				4472A3361FBE1CF000C1663B /* PurchasesHelper */,
 				441432AA1FA7FB0A00235F81 /* Assets.xcassets */,
+				44ADD73C1FAC3733004A0230 /* Helpers.swift */,
+				441432A71FA7FB0A00235F81 /* Main.storyboard */,
 				441432A31FA7FB0A00235F81 /* AppDelegate.swift */,
-				44A4C65B1FBB8649006A5AC1 /* SavedStickerModel.xcdatamodeld */,
-				44A4C65E1FBBE9C2006A5AC1 /* StickerMO.swift */,
 				441432AC1FA7FB0A00235F81 /* LaunchScreen.storyboard */,
 				441432AF1FA7FB0A00235F81 /* Info.plist */,
 			);
@@ -160,15 +158,6 @@
 				4419D1871FB5339B00EFECC2 /* FilterCell.swift */,
 			);
 			path = FiltersViewController;
-			sourceTree = "<group>";
-		};
-		441E1F8D1FB16B5D00938C2D /* SavedStickers */ = {
-			isa = PBXGroup;
-			children = (
-				441E1F8B1FB1699400938C2D /* SavedStickerViewController.swift */,
-				441E1F8E1FB16FC400938C2D /* SavedStickerCell.swift */,
-			);
-			path = SavedStickers;
 			sourceTree = "<group>";
 		};
 		442A3F431FABE65400E2EDCB /* Camera */ = {
@@ -196,6 +185,23 @@
 				44CCDF281FAE3B8B00B7BA68 /* Model */,
 			);
 			path = Sticker;
+			sourceTree = "<group>";
+		};
+		4472A32D1FBD194700C1663B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4472A3301FBD1AEF00C1663B /* StoreKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		4472A3361FBE1CF000C1663B /* PurchasesHelper */ = {
+			isa = PBXGroup;
+			children = (
+				4472A3321FBD1D6200C1663B /* IAPHelper.swift */,
+				4472A3341FBD1D6B00C1663B /* IAPProducts.swift */,
+			);
+			path = PurchasesHelper;
 			sourceTree = "<group>";
 		};
 		44CCDF281FAE3B8B00B7BA68 /* Model */ = {
@@ -276,6 +282,11 @@
 					4414329F1FA7FB0A00235F81 = {
 						CreatedOnToolsVersion = 9.0;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.InAppPurchase = {
+								enabled = 1;
+							};
+						};
 					};
 					441432B31FA7FB0A00235F81 = {
 						CreatedOnToolsVersion = 9.0;
@@ -329,10 +340,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				4419D1851FB3DDEB00EFECC2 /* FilterViewController.swift in Sources */,
-				441E1F8F1FB16FC400938C2D /* SavedStickerCell.swift in Sources */,
 				442A3F471FABE6B000E2EDCB /* StickerViewController.swift in Sources */,
 				441432A61FA7FB0A00235F81 /* CameraViewController.swift in Sources */,
+				4472A3351FBD1D6B00C1663B /* IAPProducts.swift in Sources */,
 				4419D1881FB5339B00EFECC2 /* FilterCell.swift in Sources */,
+				4472A3331FBD1D6300C1663B /* IAPHelper.swift in Sources */,
 				44F1DF021FBA5574004F56A1 /* MoreViewController.swift in Sources */,
 				442A3F421FABCBBE00E2EDCB /* EditFilters.swift in Sources */,
 				4419D18C1FB57ED300EFECC2 /* AddStickerViewController.swift in Sources */,
@@ -340,14 +352,11 @@
 				44F1DF081FBAAE05004F56A1 /* CustomAnimationPresentor.swift in Sources */,
 				44CCDF251FAE3B0F00B7BA68 /* Sticker.swift in Sources */,
 				44CCDF271FAE3B8000B7BA68 /* CreateStickers.swift in Sources */,
-				441E1F8C1FB1699400938C2D /* SavedStickerViewController.swift in Sources */,
 				44BE2CFD1FAC1C8900FD812B /* StickerCell.swift in Sources */,
-				44A4C65D1FBB8649006A5AC1 /* SavedStickerModel.xcdatamodeld in Sources */,
 				44F1DF121FBACBDC004F56A1 /* CustomAlertView.swift in Sources */,
 				441432A41FA7FB0A00235F81 /* AppDelegate.swift in Sources */,
 				44CCDF2A1FAE84C000B7BA68 /* StickerHeaderCell.swift in Sources */,
 				44F1DF0A1FBAAE0E004F56A1 /* CustomAnimationDismissor.swift in Sources */,
-				44A4C65F1FBBE9C2006A5AC1 /* StickerMO.swift in Sources */,
 				4419D18E1FB67AC100EFECC2 /* AddStickerCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -506,7 +515,7 @@
 				INFOPLIST_FILE = StickrCamera/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.creativemic.StickrCamera;
+				PRODUCT_BUNDLE_IDENTIFIER = com.creativemic.StickerCamera;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -522,7 +531,7 @@
 				INFOPLIST_FILE = StickrCamera/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.creativemic.StickrCamera;
+				PRODUCT_BUNDLE_IDENTIFIER = com.creativemic.StickerCamera;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -592,19 +601,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCVersionGroup section */
-		44A4C65B1FBB8649006A5AC1 /* SavedStickerModel.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				44A4C65C1FBB8649006A5AC1 /* CoreDataModel.xcdatamodel */,
-			);
-			currentVersion = 44A4C65C1FBB8649006A5AC1 /* CoreDataModel.xcdatamodel */;
-			path = SavedStickerModel.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
 	rootObject = 441432981FA7FB0A00235F81 /* Project object */;
 }

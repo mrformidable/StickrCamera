@@ -16,6 +16,8 @@ class MoreViewController: UIViewController {
     
     private let accountLabels = ["Unlock Premium", "Remove Ads", "Share"]
     
+    private let iapSharedInstance = IAPHelper.sharedInstance
+    
     private lazy var tableView: UITableView = {
         let tb = UITableView(frame: .zero, style: UITableViewStyle.plain)
         tb.delegate = self
@@ -27,9 +29,6 @@ class MoreViewController: UIViewController {
     
     private lazy var backButton:UIButton = {
         let button = UIButton(type: .system)
-        //let textAttributes = [NSAttributedStringKey.font: UIFont.boldSystemFont(ofSize: 14), NSAttributedStringKey.foregroundColor: UIColor.black]
-        //let title = NSAttributedString(string: "Back", attributes: textAttributes)
-        //button.setAttributedTitle(title, for: .normal)
         button.setImage(#imageLiteral(resourceName: "camera_icon"), for: .normal)
         button.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
         return button
@@ -48,6 +47,7 @@ class MoreViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         transitioningDelegate = self
+        iapSharedInstance.getIapProducts()
         
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentifier)
         view.backgroundColor = .white
@@ -83,6 +83,34 @@ class MoreViewController: UIViewController {
         navTitle.anchorConstraints(topAnchor: nil, topConstant: 0, leftAnchor: nil, leftConstant: 0, rightAnchor: nil, rightConstant: 0, bottomAnchor: nil, bottomConstant: 0, heightConstant: 25, widthConstant: 40)
         navTitle.anchorCenterConstraints(centerXAnchor: topBarContainerView.centerXAnchor, xConstant: 0, centerYAnchor: topBarContainerView.centerYAnchor, yConstant: 0)
         
+        NotificationCenter.default.addObserver(self, selector: #selector(handleFailedRestorePurchases), name: NSNotification.Name.init("HandleFailedRestorePurchasesNotification"), object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(handleCompletedRestoredPurchases), name: NSNotification.Name.init("CompletedRestorePurchasesNotification"), object: nil)
+        
+    }
+    
+    @objc
+    private func handleFailedRestorePurchases() {
+        print("show alert here")
+        let messageView = CustomMessageBox(frame: view.frame)
+        messageView.alertTitleLabel.text = "There are no purchases to restore on this iCloud account"
+        let attributes = [NSAttributedStringKey.foregroundColor:UIColor.white,NSAttributedStringKey.font:UIFont.boldSystemFont(ofSize: 17)]
+        let attributedTitle = NSMutableAttributedString(string: "Okay", attributes: attributes)
+        messageView.actionButton.setAttributedTitle(attributedTitle, for: .normal)
+        messageView.cancelButton.isHidden = true
+        view.addSubview(messageView)
+    }
+    
+    @objc
+    private func handleCompletedRestoredPurchases() {
+        let messageView = CustomMessageBox(frame: view.frame)
+        messageView.alertTitleLabel.text = "You have successfully restored purchases"
+        messageView.cancelButton.isHidden = true
+        let attributes = [NSAttributedStringKey.foregroundColor:UIColor.white,NSAttributedStringKey.font:UIFont.boldSystemFont(ofSize: 17)]
+        let attributedTitle = NSMutableAttributedString(string: "Okay", attributes: attributes)
+        messageView.actionButton.setAttributedTitle(attributedTitle, for: .normal)
+        view.addSubview(messageView)
+        print("show completing alert here")
     }
     
     @objc
@@ -162,7 +190,14 @@ extension MoreViewController: UITableViewDelegate {
             }
             
         } else {
-            print("handle purchase restore here")
+            let messageView = CustomMessageBox(frame: view.frame)
+            messageView.alertTitleLabel.text = "You can restore purchases you have previously made."
+            let attributes = [NSAttributedStringKey.foregroundColor:UIColor.white,NSAttributedStringKey.font:UIFont.boldSystemFont(ofSize: 17)]
+            let attributedTitle = NSMutableAttributedString(string: "Restore Purchases", attributes: attributes)
+            messageView.actionButton.setAttributedTitle(attributedTitle, for: .normal)
+            messageView.actionButton.setTitle("Restore Purchases", for: .normal)
+            messageView.delegate = self
+            view.addSubview(messageView)
         }
     }
 }
@@ -179,13 +214,16 @@ extension MoreViewController: UIViewControllerTransitioningDelegate {
 
 extension MoreViewController: CustomAlertViewDelegate {
     func didTapUnlockPremiumButton() {
-        print("did tap unlock do stuff here")
+        iapSharedInstance.purchaseProduct(product: .unlockPremiumProduct)
     }
 }
 
 extension MoreViewController: CustomMessageViewDelegate {
     func didTapRemoveAdsButton() {
-        print("did tap remove button")
+        iapSharedInstance.purchaseProduct(product: .removeAdsProduct)
+    }
+    func didTapRestorePurchasesButton() {
+        iapSharedInstance.restorePurchases()
     }
 }
 

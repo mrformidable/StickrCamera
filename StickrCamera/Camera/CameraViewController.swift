@@ -128,8 +128,18 @@ class CameraViewController: UIViewController {
     }
     
     private func requestCameraAccess() {
+        print("requesting acess....")
         self.capturePhotoButton.isEnabled = false
         self.switchCameraButton.isEnabled = false
+        
+        let messageView = CustomMessageBox(frame: view.frame)
+        let attributes = [NSAttributedStringKey.foregroundColor:UIColor.white,NSAttributedStringKey.font:UIFont.boldSystemFont(ofSize: 17)]
+        let attributedTitle = NSMutableAttributedString(string: "Open Settings", attributes: attributes)
+        messageView.alertTitleLabel.text = "Stickr Cam doesn't have permission to use the camera, please change privacy settings"
+        messageView.actionButton.setAttributedTitle(attributedTitle, for: .normal)
+        messageView.messageViewCameraVCDelegate = self
+        view.addSubview(messageView)
+
         AVCaptureDevice.requestAccess(for: .video, completionHandler: { (granted) in
             self.isCameraAccessGiven = granted
             if self.isCameraAccessGiven {
@@ -167,7 +177,7 @@ class CameraViewController: UIViewController {
             self.isCameraAccessGiven = true
             self.startConfiguration()
             if isCameraAccessGiven {
-                print("yes access ")
+                print("yes access")
             }
             break
         case .denied:
@@ -188,6 +198,7 @@ class CameraViewController: UIViewController {
         } else if photoAuthStatus == .notDetermined {
             requestPhotoAccess()
         }
+
     }
     
     private func getPhotos() {
@@ -195,7 +206,7 @@ class CameraViewController: UIViewController {
             let allPhotos = PHAsset.fetchAssets(with: .image, options: PHFetchOptions())
             let imageManager = PHImageManager()
             let imageOptions = PHImageRequestOptions()
-            guard let firstPhotoAsset = allPhotos.lastObject else {print("failed to get image"); return}
+            guard let firstPhotoAsset = allPhotos.lastObject else { print("failed to get image"); return}
             
             DispatchQueue.main.async {
                 let size = self.photoCollectionImageView.frame.size
@@ -306,7 +317,7 @@ class CameraViewController: UIViewController {
     @objc
     private func subjectAreaDidChange(notification: NSNotification) {
         let devicePoint = CGPoint(x: 0.5, y: 0.5)
-        focus(focusMode: .continuousAutoFocus, exposureMode: .continuousAutoExposure, atPoint: devicePoint, monitorSubjectAreaChange: false)
+        focus(focusMode: .autoFocus, exposureMode: .continuousAutoExposure, atPoint: devicePoint, monitorSubjectAreaChange: false)
     }
     
     private func startConfiguration() {
@@ -372,6 +383,17 @@ class CameraViewController: UIViewController {
     }
     
     @IBAction func capturePhotoButtonTapped(_ sender: Any) {
+        guard let previewLayer = self.previewLayer else {return}
+        previewLayer.opacity = 1
+        UIView.animate(withDuration: 0.01, animations: {
+       
+            previewLayer.layoutIfNeeded()
+            previewLayer.layoutSublayers()
+            previewLayer.opacity = 0
+
+        }) { (success) in
+       
+        }
         if !isCameraAccessGiven {
             return
         }
@@ -468,12 +490,43 @@ class CameraViewController: UIViewController {
     
     @objc
     private func handleSave() {
+        if !isPhotoLibraryAccessGiven {
+            let messageView = CustomMessageBox(frame: view.frame)
+            let attributes = [NSAttributedStringKey.foregroundColor:UIColor.white,NSAttributedStringKey.font:UIFont.boldSystemFont(ofSize: 17)]
+            let attributedTitle = NSMutableAttributedString(string: "Open Settings", attributes: attributes)
+            messageView.alertTitleLabel.text = "Stickr Cam doesn't have permission to use the photos, please change privacy settings"
+            messageView.actionButton.setAttributedTitle(attributedTitle, for: .normal)
+            messageView.messageViewCameraVCDelegate = self
+            view.addSubview(messageView)
+            return
+        }
+        if let previewLayer = self.previewLayer {
+            previewLayer.opacity = 1
+        }
         saveImageToPhotoLibrary(completionHandler: { (success) in
             if success {
-                print("successfully saved then show alert")
-                handleCancel()
+                let messageView = CustomMessageBox(frame: view.frame)
+                messageView.alertTitleLabel.text = "Successfully Saved Photo to Library"
+                let attributes = [NSAttributedStringKey.foregroundColor:UIColor.white,NSAttributedStringKey.font:UIFont.boldSystemFont(ofSize: 17)]
+                let attributedTitle = NSMutableAttributedString(string: "Okay Done", attributes: attributes)
+                messageView.actionButton.setAttributedTitle(attributedTitle, for: .normal)
+                messageView.cancelButton.isHidden = true
+                messageView.messageViewCameraVCDelegate = self
+                view.addSubview(messageView)
+
             } else {
                 print("error saving")
+                if let previewLayer = self.previewLayer {
+                    previewLayer.opacity = 1
+                }
+                
+                let messageView = CustomMessageBox(frame: view.frame)
+                messageView.alertTitleLabel.text = "Error Saving Photo to Library, Please Retry"
+                messageView.cancelButton.isHidden = true
+                let attributes = [NSAttributedStringKey.foregroundColor:UIColor.white,NSAttributedStringKey.font:UIFont.boldSystemFont(ofSize: 17)]
+                let attributedTitle = NSMutableAttributedString(string: "Okay", attributes: attributes)
+                messageView.actionButton.setAttributedTitle(attributedTitle, for: .normal)
+                view.addSubview(messageView)
             }
         })
     }
@@ -492,6 +545,9 @@ class CameraViewController: UIViewController {
     
     @objc
     private func handleCancel() {
+        if let previewLayer = self.previewLayer {
+            previewLayer.opacity = 1
+        }
         cancelButton.isHidden = true
         moreButton.isHidden = false
         flashButton.isHidden = false
@@ -563,14 +619,11 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
     
     func photoOutput(_ output: AVCapturePhotoOutput, willCapturePhotoFor resolvedSettings: AVCaptureResolvedPhotoSettings) {
         
-        //         previewLayer!.backgroundColor = UIColor.black.cgColor
-        //         previewLayer!.opacity = 0
-        //        UIView.animate(withDuration: 0.25, animations: {
-        //            self.previewLayer!.opacity = 1
-        //        }) { (success) in
-        //            self.previewLayer!.opacity = 1
-        ////            darkOverlayView.removeFromSuperview()
-        //        }
+//                UIView.animate(withDuration: 0.01, animations: {
+//                    self.previewLayer!.opacity = 1
+//                }) { (success) in
+//                    self.previewLayer!.opacity = 0
+//                }
     }
 }
 
@@ -658,6 +711,15 @@ extension CameraViewController: UIGestureRecognizerDelegate {
     }
 }
 
+extension CameraViewController: CustomMessageCameraVCDelegate {
+    func didTapDismissButton() { handleCancel() }
+    func didTapOpenSettingsButton() {
+        guard let url = URL(string: UIApplicationOpenSettingsURLString) else {
+            return
+        }
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+    }
+}
 
 
 

@@ -30,6 +30,12 @@ class StickerViewController: UICollectionViewController {
     var imageToEdit:UIImage?
     
     weak var delegate:ChooseStickerDelegate?
+    
+    let unlockedPremiumState = UserDefaults.standard.bool(forKey: "unlockPremiumPurchaseMade")
+    
+    let removeAdsPurchaseMade = UserDefaults.standard.bool(forKey: "removeAdsPurchaseMade")
+    
+    var canSelectSticker:Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,15 +48,22 @@ class StickerViewController: UICollectionViewController {
         UINavigationBar.appearance().tintColor = .black
         let leftBarButtonItem =  UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelBarButtonTapped))
         navigationItem.leftBarButtonItem = leftBarButtonItem
-        
-        let rightBarButtonItem = UIBarButtonItem(image: #imageLiteral(resourceName: "like_icon_filled"), style: .plain
-            , target: self, action: #selector(savedBarButtonTapped))
-        navigationItem.rightBarButtonItem = rightBarButtonItem
         navigationItem.title = "Stickers"
         
         travelStickers =  CreateSticker.travelStickers()
         memeStickers = CreateSticker.memeStickers()
         
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        canSelectSticker = unlockedPremiumState
+        
+        if removeAdsPurchaseMade {
+            print("Bought ads removal")
+        } else {
+            print("Ads still showing")
+        }
     }
 
     @objc
@@ -58,12 +71,6 @@ class StickerViewController: UICollectionViewController {
         dismiss(animated: true, completion: nil)
     }
    
-    @objc
-    private func savedBarButtonTapped() {
-     let savedStickerVC = SavedStickerViewController(collectionViewLayout: UICollectionViewFlowLayout())
-     navigationController?.pushViewController(savedStickerVC, animated: true)
-        
-    }
     
     // MARK: UICollectionViewDataSource
 
@@ -93,7 +100,6 @@ class StickerViewController: UICollectionViewController {
         default:
             break
         }
-
         return cell
     }
     
@@ -107,10 +113,13 @@ class StickerViewController: UICollectionViewController {
         default:
             break
         }
-        guard let stickerImage = image else {return}
-        delegate?.didChooseSticker(stickerImage)
-        dismiss(animated: true, completion: nil)
-
+        if canSelectSticker {
+            guard let stickerImage = image else {return}
+            delegate?.didChooseSticker(stickerImage)
+            dismiss(animated: true, completion: nil)
+        } else {
+            print("error need to unlock premium features first")
+        }
     }
     
     override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
@@ -129,7 +138,6 @@ class StickerViewController: UICollectionViewController {
 }
 
 extension StickerViewController: UICollectionViewDelegateFlowLayout {
-
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = (view.frame.width - 6) / 2
         return CGSize(width: width, height: width)
@@ -143,7 +151,6 @@ extension StickerViewController: UICollectionViewDelegateFlowLayout {
 }
 
 extension StickerViewController: StickerHeaderCellDelegate {
-    
     func didTapSegment(_ segment: Int) {
         currentSegment = segment
         collectionView?.reloadData()
