@@ -9,11 +9,9 @@
 import Foundation
 import UIKit
 
-struct Sticker {
-    
+public struct Sticker {
     let image:UIImage
     let title:String
     let isPremium:Bool
     let isFavourite:Bool
-    
 }

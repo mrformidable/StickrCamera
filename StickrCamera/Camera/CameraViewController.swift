@@ -114,11 +114,10 @@ class CameraViewController: UIViewController {
     private var isRotating = false
     
     private var identity = CGAffineTransform.identity
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
-        requestPhotoAccess()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -127,29 +126,97 @@ class CameraViewController: UIViewController {
         self.selectedFilterImage = nil
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        sessionQueue.async {
+            NotificationCenter.default.removeObserver(self)
+        }
+    }
+    
     private func requestCameraAccess() {
-        print("requesting acess....")
+        print("requesting access....")
         self.capturePhotoButton.isEnabled = false
         self.switchCameraButton.isEnabled = false
         
-        let messageView = CustomMessageBox(frame: view.frame)
-        let attributes = [NSAttributedStringKey.foregroundColor:UIColor.white,NSAttributedStringKey.font:UIFont.boldSystemFont(ofSize: 17)]
-        let attributedTitle = NSMutableAttributedString(string: "Open Settings", attributes: attributes)
-        messageView.alertTitleLabel.text = "Stickr Cam doesn't have permission to use the camera, please change privacy settings"
-        messageView.actionButton.setAttributedTitle(attributedTitle, for: .normal)
-        messageView.messageViewCameraVCDelegate = self
-        view.addSubview(messageView)
-
-        AVCaptureDevice.requestAccess(for: .video, completionHandler: { (granted) in
-            self.isCameraAccessGiven = granted
-            if self.isCameraAccessGiven {
-                self.startConfiguration()
+        AVCaptureDevice.requestAccess(for: .video, completionHandler: { [weak self] (granted) in
+            guard let _self = self else {return}
+            _self.isCameraAccessGiven = granted
+            if _self.isCameraAccessGiven {
+                self?.startConfiguration()
                 DispatchQueue.main.async {
-                    self.capturePhotoButton.isEnabled = true
-                    self.switchCameraButton.isEnabled = true
+                    _self.capturePhotoButton.isEnabled = true
+                    _self.switchCameraButton.isEnabled = true
+                }
+            } else {
+                DispatchQueue.main.async {
+                    _self.requestCameraAccessAlertView()
                 }
             }
         })
+    }
+    
+    private func requestCameraAccessAlertView() {
+        let messageView = CustomMessageBox(frame: view.frame)
+        let attributes = [NSAttributedStringKey.foregroundColor:UIColor.white,NSAttributedStringKey.font:UIFont.boldSystemFont(ofSize: 17)]
+        let attributedTitle = NSMutableAttributedString(string: "Open Settings", attributes: attributes)
+        messageView.alertTitleLabel.text = "Stickr Cam needs permission to use camera"
+        messageView.actionButton.setAttributedTitle(attributedTitle, for: .normal)
+        messageView.messageViewCameraVCDelegate = self
+        view.addSubview(messageView)
+    }
+    
+    private func requestPhotoAccessAlertView() {
+        let messageView = CustomMessageBox(frame: view.frame)
+        let attributes = [NSAttributedStringKey.foregroundColor:UIColor.white,NSAttributedStringKey.font:UIFont.boldSystemFont(ofSize: 17)]
+        messageView.alertTitleLabel.text = "Stickr Cam doesn't have permission to use the photos"
+        let attributedTitle = NSMutableAttributedString(string: "Open Settings", attributes: attributes)
+        messageView.actionButton.setAttributedTitle(attributedTitle, for: .normal)
+        messageView.messageViewCameraVCDelegate = self
+        view.addSubview(messageView)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        let cameraAuthStatus = AVCaptureDevice.authorizationStatus(for: .video)
+        switch cameraAuthStatus {
+        case .authorized:
+            self.isCameraAccessGiven = true
+            self.startConfiguration()
+            break
+        case .denied:
+            self.isCameraAccessGiven = false
+            break
+        case .notDetermined:
+            self.isCameraAccessGiven = false
+            break
+        default:
+            break
+        }
+        
+        let photoAuthStatus = PHPhotoLibrary.authorizationStatus()
+        if photoAuthStatus == .authorized {
+            isPhotoLibraryAccessGiven = true
+        } else if photoAuthStatus == .denied {
+            isPhotoLibraryAccessGiven = false
+        } else if photoAuthStatus == .notDetermined {
+            isPhotoLibraryAccessGiven = false
+        }
+        
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if !isCameraAccessGiven {
+            requestCameraAccess()
+        }
+        
+        if !isPhotoLibraryAccessGiven {
+            requestPhotoAccess()
+            photoCollectionImageView.isUserInteractionEnabled = false
+        } else {
+            self.getPhotos()
+            photoCollectionImageView.isUserInteractionEnabled = true
+        }
     }
     
     private func requestPhotoAccess() {
@@ -158,9 +225,15 @@ class CameraViewController: UIViewController {
             case .authorized:
                 self.isPhotoLibraryAccessGiven = true
                 self.getPhotos()
+                DispatchQueue.main.async {
+                    self.photoCollectionImageView.isUserInteractionEnabled = true
+                }
                 break
             case .notDetermined, .denied:
                 self.isPhotoLibraryAccessGiven = false
+                DispatchQueue.main.async {
+                    self.requestPhotoAccessAlertView()
+                }
                 break
             default:
                 break
@@ -168,57 +241,27 @@ class CameraViewController: UIViewController {
         }
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        let cameraAuthStatus = AVCaptureDevice.authorizationStatus(for: .video)
-        switch cameraAuthStatus {
-        case .authorized:
-            self.isCameraAccessGiven = true
-            self.startConfiguration()
-            if isCameraAccessGiven {
-                print("yes access")
-            }
-            break
-        case .denied:
-            self.isCameraAccessGiven = false
-            self.requestCameraAccess()
-            break
-        case .notDetermined:
-            self.requestCameraAccess()
-            break
-        default:
-            break
-        }
-        let photoAuthStatus = PHPhotoLibrary.authorizationStatus()
-        if photoAuthStatus == .authorized {
-            isPhotoLibraryAccessGiven = true
-        } else if photoAuthStatus == .denied {
-            isPhotoLibraryAccessGiven = false
-        } else if photoAuthStatus == .notDetermined {
-            requestPhotoAccess()
-        }
-
-    }
-    
     private func getPhotos() {
         if isPhotoLibraryAccessGiven {
-            let allPhotos = PHAsset.fetchAssets(with: .image, options: PHFetchOptions())
-            let imageManager = PHImageManager()
-            let imageOptions = PHImageRequestOptions()
-            guard let firstPhotoAsset = allPhotos.lastObject else { print("failed to get image"); return}
-            
-            DispatchQueue.main.async {
-                let size = self.photoCollectionImageView.frame.size
-                imageManager.requestImage(for: firstPhotoAsset, targetSize: size, contentMode: .aspectFill, options: imageOptions, resultHandler: { (image, nil) in
-                    guard let image = image else {
-                        print("Could not retreive image")
-                        return
-                    }
-                    DispatchQueue.main.async {
-                        self.photoCollectionImageView.image = image
-                    }
-                })
+            DispatchQueue.global(qos: .background).async {
+                let allPhotos = PHAsset.fetchAssets(with: .image, options: PHFetchOptions())
+                let imageManager = PHImageManager()
+                let imageOptions = PHImageRequestOptions()
+                guard let firstPhotoAsset = allPhotos.lastObject else { print("failed to get image"); return}
+                
+                DispatchQueue.main.async { [weak self] in
+                    guard let _self = self else {return}
+                    let size = _self.photoCollectionImageView.frame.size
+                    imageManager.requestImage(for: firstPhotoAsset, targetSize: size, contentMode: .aspectFill, options: imageOptions, resultHandler: { (image, nil) in
+                        guard let image = image else {
+                            print("Could not retreive image")
+                            return
+                        }
+                        DispatchQueue.main.async {
+                            _self.photoCollectionImageView.image = image
+                        }
+                    })
+                }
             }
         }
     }
@@ -254,7 +297,7 @@ class CameraViewController: UIViewController {
         completionHandler(true)
     }
     
-    @IBAction func toggleFrontOrBackCamera(_ sender: Any) {
+    private func handleCameraToggle() {
         UIView.animate(withDuration: 0.5, animations: {
             self.switchCameraButton.transform =  CGAffineTransform(rotationAngle: CGFloat.pi)
         }, completion: { _ in
@@ -314,10 +357,14 @@ class CameraViewController: UIViewController {
         }
     }
     
+    @IBAction func toggleFrontOrBackCamera(_ sender: Any) {
+        handleCameraToggle()
+    }
+    
     @objc
     private func subjectAreaDidChange(notification: NSNotification) {
         let devicePoint = CGPoint(x: 0.5, y: 0.5)
-        focus(focusMode: .autoFocus, exposureMode: .continuousAutoExposure, atPoint: devicePoint, monitorSubjectAreaChange: false)
+        focus(focusMode: .continuousAutoFocus, exposureMode: .continuousAutoExposure, atPoint: devicePoint, monitorSubjectAreaChange: false)
     }
     
     private func startConfiguration() {
@@ -383,22 +430,33 @@ class CameraViewController: UIViewController {
     }
     
     @IBAction func capturePhotoButtonTapped(_ sender: Any) {
-        guard let previewLayer = self.previewLayer else {return}
-        previewLayer.opacity = 1
-        UIView.animate(withDuration: 0.01, animations: {
-       
-            previewLayer.layoutIfNeeded()
-            previewLayer.layoutSublayers()
-            previewLayer.opacity = 0
-
-        }) { (success) in
-       
+        sessionQueue.async {
+            DispatchQueue.main.async {
+                guard let keyWindow = UIApplication.shared.keyWindow else {
+                    return
+                }
+                let darkOverLayView = UIView()
+                darkOverLayView.backgroundColor = .black
+                darkOverLayView.frame = keyWindow.frame
+                darkOverLayView.alpha = 0
+                keyWindow.addSubview(darkOverLayView)
+                
+                if !self.isCameraAccessGiven {
+                    return
+                }
+                self.handlePhotoCapture()
+                UIView.animate(withDuration: 0.25, animations: {
+                    darkOverLayView.alpha = 1
+                    
+                }) { (success) in
+                    UIView.animate(withDuration: 0.25, delay: 0, options: .curveLinear, animations: {
+                        darkOverLayView.alpha = 0
+                        
+                    }, completion: nil)
+                }
+                self.showEditingTools()
+            }
         }
-        if !isCameraAccessGiven {
-            return
-        }
-        handlePhotoCapture()
-        showEditingTools()
     }
     
     private func handlePhotoCapture() {
@@ -423,7 +481,6 @@ class CameraViewController: UIViewController {
             return
         }
         let locationOnScreen = gestureRecognizer.location(in: self.view)
-        print(locationOnScreen)
         
         let focusView = UIImageView()
         focusView.image = #imageLiteral(resourceName: "focus")
@@ -436,7 +493,7 @@ class CameraViewController: UIViewController {
         }) { (sucess) in
             focusView.layer.removeFromSuperlayer()
         }
-        focus(focusMode: .continuousAutoFocus, exposureMode: .continuousAutoExposure, atPoint: devicePoint, monitorSubjectAreaChange: true)
+        focus(focusMode: .autoFocus, exposureMode: .autoExpose, atPoint: devicePoint, monitorSubjectAreaChange: true)
     }
     
     private func focus(focusMode:AVCaptureDevice.FocusMode, exposureMode:AVCaptureDevice.ExposureMode, atPoint devicePoint:CGPoint, monitorSubjectAreaChange:Bool) {
@@ -467,11 +524,16 @@ class CameraViewController: UIViewController {
         let imagePickerController = UIImagePickerController()
         imagePickerController.delegate = self
         present(imagePickerController, animated: true, completion: nil)
-        UIView.animate(withDuration: 0.45, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-            self.photoCollectionImageView.transform = CGAffineTransform(scaleX: 0.85, y: 0.85)
-        }) { (_) in
-            self.photoCollectionImageView.transform = CGAffineTransform(scaleX: 1, y: 1)
+        UIView.animate(withDuration: 0.45, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: { [weak self] in
+            self?.photoCollectionImageView.transform = CGAffineTransform(scaleX: 0.80, y: 0.80)
+        }) { [weak self] (_) in
+            self?.photoCollectionImageView.transform = CGAffineTransform(scaleX: 1, y: 1)
         }
+    }
+    
+    @objc
+    private func didTapChangeCameraScreen(_ gesture:UITapGestureRecognizer) {
+        handleCameraToggle()
     }
     
     @IBAction func flashButtonTapped(_ sender: Any) {
@@ -494,7 +556,7 @@ class CameraViewController: UIViewController {
             let messageView = CustomMessageBox(frame: view.frame)
             let attributes = [NSAttributedStringKey.foregroundColor:UIColor.white,NSAttributedStringKey.font:UIFont.boldSystemFont(ofSize: 17)]
             let attributedTitle = NSMutableAttributedString(string: "Open Settings", attributes: attributes)
-            messageView.alertTitleLabel.text = "Stickr Cam doesn't have permission to use the photos, please change privacy settings"
+            messageView.alertTitleLabel.text = "Stickr Cam doesn't have permission to use the photos"
             messageView.actionButton.setAttributedTitle(attributedTitle, for: .normal)
             messageView.messageViewCameraVCDelegate = self
             view.addSubview(messageView)
@@ -513,7 +575,7 @@ class CameraViewController: UIViewController {
                 messageView.cancelButton.isHidden = true
                 messageView.messageViewCameraVCDelegate = self
                 view.addSubview(messageView)
-
+                
             } else {
                 print("error saving")
                 if let previewLayer = self.previewLayer {
@@ -575,7 +637,13 @@ class CameraViewController: UIViewController {
         photoCollectionImageView.layer.cornerRadius = 5
         photoCollectionImageView.layer.masksToBounds = true
         photoCollectionImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapPhotoCollectionImage)))
-        cameraView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCameraScreen(_:))))
+        let changeFocusGesture = UITapGestureRecognizer(target: self, action: #selector(didTapCameraScreen(_:)))
+        changeFocusGesture.numberOfTapsRequired = 1
+        cameraView.addGestureRecognizer(changeFocusGesture)
+        
+        let changeCameraGesture = UITapGestureRecognizer(target: self, action: #selector(didTapChangeCameraScreen(_:)))
+        changeCameraGesture.numberOfTapsRequired = 2
+        cameraView.addGestureRecognizer(changeCameraGesture)
         
         topContainerView.addSubview(saveButton)
         saveButton.anchorConstraints(topAnchor: nil, topConstant: 0, leftAnchor: nil, leftConstant: 0, rightAnchor: topContainerView.rightAnchor, rightConstant: -10, bottomAnchor: nil, bottomConstant: 0, heightConstant: 0, widthConstant: 0)
@@ -615,15 +683,6 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
         cameraView.addSubview(previewImageView!)
         previewImageView?.anchorConstraints(topAnchor: cameraView.topAnchor, topConstant: 0, leftAnchor: cameraView.leftAnchor, leftConstant: 0, rightAnchor: cameraView.rightAnchor, rightConstant: 0, bottomAnchor: containerView.topAnchor, bottomConstant: 0, heightConstant: 0, widthConstant: 0)
         self.previewImage = finalImage
-    }
-    
-    func photoOutput(_ output: AVCapturePhotoOutput, willCapturePhotoFor resolvedSettings: AVCaptureResolvedPhotoSettings) {
-        
-//                UIView.animate(withDuration: 0.01, animations: {
-//                    self.previewLayer!.opacity = 1
-//                }) { (success) in
-//                    self.previewLayer!.opacity = 0
-//                }
     }
 }
 
@@ -671,18 +730,12 @@ extension CameraViewController:UIImagePickerControllerDelegate, UINavigationCont
             selectedImage = editedImage
         }
         guard let image = selectedImage else { return }
-        
-        //        blackOverlayView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 40))
-        //        blackOverlayView?.backgroundColor = .black
-        //        cameraView.addSubview(blackOverlayView!)
-        
         previewImageView = UIImageView(image: image)
         previewImageView?.contentMode = .scaleAspectFill
         previewImageView?.clipsToBounds = true
         cameraView.addSubview(previewImageView!)
         self.previewImage = image
         previewImageView?.anchorConstraints(topAnchor: topContainerView.bottomAnchor, topConstant: 0, leftAnchor: cameraView.leftAnchor, leftConstant: 0, rightAnchor: cameraView.rightAnchor, rightConstant: 0, bottomAnchor: cameraView.bottomAnchor, bottomConstant: 0, heightConstant: 0, widthConstant: 0)
-        
         dismiss(animated: true) {
             self.showEditingTools()
         }
@@ -690,7 +743,6 @@ extension CameraViewController:UIImagePickerControllerDelegate, UINavigationCont
 }
 
 extension CameraViewController: AddStickerViewDelegate {
-    
     func didSelectSticker(_ image: UIImage) {
         previewImageView?.image = image
         self.selectedStickerImage = image
@@ -698,7 +750,6 @@ extension CameraViewController: AddStickerViewDelegate {
 }
 
 extension CameraViewController: FilterViewControllerDelegate {
-    
     func didChooseFilter(_ image: UIImage) {
         previewImageView?.image = image
         selectedFilterImage = image

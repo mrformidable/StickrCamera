@@ -19,8 +19,8 @@ class StickerCell: UICollectionViewCell {
             stickerImageView.image = _sticker.image
         }
     }
-    
-    let stickerImageView:UIImageView = {
+        
+    private let stickerImageView:UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
@@ -28,7 +28,7 @@ class StickerCell: UICollectionViewCell {
         return imageView
     }()
     
-    let stickerTitle:UILabel = {
+    private let stickerTitle:UILabel = {
         let label = UILabel()
         label.text = "Sticker Title Here"
         label.font = UIFont.boldSystemFont(ofSize: 15)
@@ -36,20 +36,19 @@ class StickerCell: UICollectionViewCell {
         return label
     }()
     
-    private lazy var lockButton:UIButton = {
+     lazy var lockButton:UIButton = {
         let button = UIButton(type: .system)
         button.setImage(#imageLiteral(resourceName: "lock_icon"), for: .normal)
         button.addTarget(self, action: #selector(didTapLockedButton), for: .touchUpInside)
         return button
     }()
     
-    
     @objc
     private func didTapLockedButton() {
         print("tapped locked")
     }
    
-    let unlockedPremiumState = UserDefaults.standard.bool(forKey: "unlockPremiumPurchaseMade")
+    let unlockedPremiumState = AccountStatus.returnUserPremiumStatus()
     
     private func setupViews() {
         backgroundColor = .white
@@ -74,13 +73,11 @@ class StickerCell: UICollectionViewCell {
         } else {
             lockButton.isHidden = false
         }
-        
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
 }
 
 

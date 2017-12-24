@@ -7,11 +7,11 @@
 //
 
 import UIKit
+import GoogleMobileAds
 
-protocol ChooseStickerDelegate: class {
+public protocol ChooseStickerDelegate: class {
     func didChooseSticker(_ image:UIImage)
 }
-
 
 class StickerViewController: UICollectionViewController {
     
@@ -31,11 +31,11 @@ class StickerViewController: UICollectionViewController {
     
     weak var delegate:ChooseStickerDelegate?
     
-    let unlockedPremiumState = UserDefaults.standard.bool(forKey: "unlockPremiumPurchaseMade")
+    private var canSelectSticker:Bool = false
     
-    let removeAdsPurchaseMade = UserDefaults.standard.bool(forKey: "removeAdsPurchaseMade")
+    private var interstitial:GADInterstitial!
     
-    var canSelectSticker:Bool = false
+    private let iapSharedInstance = IAPHelper.sharedInstance
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,27 +53,65 @@ class StickerViewController: UICollectionViewController {
         travelStickers =  CreateSticker.travelStickers()
         memeStickers = CreateSticker.memeStickers()
         
+        iapSharedInstance.getIapProducts()
+        
+        interstitial = createAndLoadInterstitial()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(handleUnlockPremiumPurchaseMade), name: NSNotification.Name.init("UnlockPremiumPurchaseMade"), object: nil)
+        
+        if AccountStatus.returnUserAdRemovalStatus() {
+            print("should not show any ads")
+        } else {
+            print("show ads here")
+            showInterstitialAds()
+        }
+        
+        if AccountStatus.returnUserPremiumStatus() {
+            print("should not show ads here")
+        } else {
+            if AccountStatus.returnUserAdRemovalStatus() {
+                print("user paid to remove ads")
+            } else {
+                showInterstitialAds()
+            }
+        }
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        canSelectSticker = unlockedPremiumState
-        
-        if removeAdsPurchaseMade {
-            print("Bought ads removal")
-        } else {
-            print("Ads still showing")
-        }
+        canSelectSticker = AccountStatus.returnUserPremiumStatus()
+
     }
 
+    private func showInterstitialAds() {
+        if self.interstitial.isReady {
+            self.interstitial.present(fromRootViewController: self)
+        } else {
+            print("error showing ad")
+        }
+    }
+    
+    @objc
+    private func handleUnlockPremiumPurchaseMade() {
+        canSelectSticker = true
+        guard let collectionViewCells = collectionView?.visibleCells else {
+            print("no visible cells")
+            return
+        }
+        for cell in collectionViewCells {
+            if let stickerCell = cell as? StickerCell {
+                stickerCell.lockButton.isHidden = true
+            }
+        }
+    }
+    
     @objc
     private func cancelBarButtonTapped() {
         dismiss(animated: true, completion: nil)
     }
-   
     
     // MARK: UICollectionViewDataSource
-
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
@@ -90,11 +128,9 @@ class StickerViewController: UICollectionViewController {
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: stickerCellIdentifier, for: indexPath) as! StickerCell
-        
         switch currentSegment {
         case 0:
-            let travelSticker = travelStickers[indexPath.item]
-            cell.sticker = travelSticker
+            cell.sticker = travelStickers[indexPath.item]
         case 1:
             cell.sticker = memeStickers[indexPath.item]
         default:
@@ -118,7 +154,10 @@ class StickerViewController: UICollectionViewController {
             delegate?.didChooseSticker(stickerImage)
             dismiss(animated: true, completion: nil)
         } else {
-            print("error need to unlock premium features first")
+            let messageAlert = CustomAlertView(frame: view.frame)
+            messageAlert.alertTitleLabel.text = "Sticker Locked. It looks like you have not unlocked the premium account, To enable sticker use, please unlock premium account"
+            messageAlert.delegate = self
+            view.addSubview(messageAlert)
         }
     }
     
@@ -135,6 +174,14 @@ class StickerViewController: UICollectionViewController {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         return CGSize(width: view.frame.width, height: 45)
     }
+    
+    private func createAndLoadInterstitial() -> GADInterstitial {
+        interstitial = GADInterstitial(adUnitID: AdAppIdentifiers.filterAd.rawValue)
+        interstitial.delegate = self
+        interstitial.load(GADRequest())
+        return interstitial
+    }
+    
 }
 
 extension StickerViewController: UICollectionViewDelegateFlowLayout {
@@ -149,6 +196,11 @@ extension StickerViewController: UICollectionViewDelegateFlowLayout {
         return 2
     }
 }
+extension StickerViewController: CustomAlertViewDelegate {
+    func didTapUnlockPremiumButton() {
+        iapSharedInstance.purchaseProduct(product: .unlockPremiumProduct)
+    }
+}
 
 extension StickerViewController: StickerHeaderCellDelegate {
     func didTapSegment(_ segment: Int) {
@@ -157,6 +209,11 @@ extension StickerViewController: StickerHeaderCellDelegate {
     }
 }
 
+extension StickerViewController: GADInterstitialDelegate {
+    func interstitialDidDismissScreen(_ ad: GADInterstitial) {
+        interstitial = createAndLoadInterstitial()
+    }
+}
 
 
 

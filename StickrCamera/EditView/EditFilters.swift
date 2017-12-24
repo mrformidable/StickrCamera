@@ -22,7 +22,7 @@ public enum FilterName:String {
     case sepia = "CISepiaTone"
 }
 
-struct Filter {
+public struct Filter {
     private let filterName:FilterName!
     private let filter:CIFilter
     

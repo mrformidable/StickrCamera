@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import GoogleMobileAds
 
 class MoreViewController: UIViewController {
     
@@ -43,6 +44,11 @@ class MoreViewController: UIViewController {
         return view
     }()
     
+    private let bannerView:GADBannerView = {
+        let banner = GADBannerView()
+        banner.translatesAutoresizingMaskIntoConstraints = false
+        return banner
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -68,7 +74,8 @@ class MoreViewController: UIViewController {
         backButton.centerYAnchor.constraint(equalTo: topBarContainerView.centerYAnchor, constant: 0).isActive = true
         
         
-        logoContainerView.anchorConstraints(topAnchor: topBarContainerView.bottomAnchor, topConstant: 0, leftAnchor: view.leftAnchor, leftConstant: 0, rightAnchor: view.rightAnchor, rightConstant: 0, bottomAnchor: tableView.topAnchor, bottomConstant: 0, heightConstant: 200, widthConstant: 0)
+        let logoHeightConstant:CGFloat = view.frame.height * 0.3
+        logoContainerView.anchorConstraints(topAnchor: topBarContainerView.bottomAnchor, topConstant: 0, leftAnchor: view.leftAnchor, leftConstant: 0, rightAnchor: view.rightAnchor, rightConstant: 0, bottomAnchor: tableView.topAnchor, bottomConstant: 0, heightConstant: logoHeightConstant, widthConstant: 0)
         
         tableView.anchorConstraints(topAnchor: logoContainerView.bottomAnchor, topConstant: 0, leftAnchor: view.leftAnchor, leftConstant: 0, rightAnchor: view.rightAnchor, rightConstant: 0, bottomAnchor: view.bottomAnchor, bottomConstant: 0, heightConstant: 0, widthConstant: 0)
         
@@ -87,11 +94,62 @@ class MoreViewController: UIViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(handleCompletedRestoredPurchases), name: NSNotification.Name.init("CompletedRestorePurchasesNotification"), object: nil)
         
+        NotificationCenter.default.addObserver(self, selector: #selector(handleUnlockPremiumPurchaseMade), name: NSNotification.Name.init("UnlockPremiumPurchaseMade"), object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(handleRemoveAdPurchase), name: NSNotification.Name.init("RemoveAdsPurchaseMade"), object: nil)
+    
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        let request = GADRequest()
+        bannerView.adUnitID = AdAppIdentifiers.bannerAd.rawValue
+        bannerView.rootViewController = self
+        bannerView.load(request)
+
+        if AccountStatus.returnUserAdRemovalStatus() {
+            print("should not show any ads")
+        } else {
+            print("show ads here")
+            showBannerAds()
+        }
+        
+        if AccountStatus.returnUserPremiumStatus() {
+            print("should not show ads here")
+        } else {
+            if AccountStatus.returnUserAdRemovalStatus() {
+                print("user paid to remove ads")
+                return
+            }
+            showBannerAds()
+            print("show ads here")
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.init("CompletedRestorePurchasesNotification"), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.init("HandleFailedRestorePurchasesNotification"), object: nil)
+    }
+    
+    private func showBannerAds() {
+        view.addSubview(bannerView)
+        bannerView.anchorConstraints(topAnchor: nil, topConstant: 0, leftAnchor: view.leftAnchor, leftConstant: 0, rightAnchor: nil, rightConstant: 0, bottomAnchor: view.bottomAnchor, bottomConstant: 0, heightConstant: 50, widthConstant: 320)
+    }
+    
+    @objc
+    private func handleUnlockPremiumPurchaseMade() {
+        bannerView.removeFromSuperview()
+    }
+    
+    @objc
+    private func handleRemoveAdPurchase() {
+        bannerView.removeFromSuperview()
     }
     
     @objc
     private func handleFailedRestorePurchases() {
-        print("show alert here")
         let messageView = CustomMessageBox(frame: view.frame)
         messageView.alertTitleLabel.text = "There are no purchases to restore on this iCloud account"
         let attributes = [NSAttributedStringKey.foregroundColor:UIColor.white,NSAttributedStringKey.font:UIFont.boldSystemFont(ofSize: 17)]
@@ -110,7 +168,6 @@ class MoreViewController: UIViewController {
         let attributedTitle = NSMutableAttributedString(string: "Okay", attributes: attributes)
         messageView.actionButton.setAttributedTitle(attributedTitle, for: .normal)
         view.addSubview(messageView)
-        print("show completing alert here")
     }
     
     @objc
@@ -186,7 +243,9 @@ extension MoreViewController: UITableViewDelegate {
             } else {
                 let appUrlShareLink = "some link to share app"
                 let activityController = UIActivityViewController(activityItems: [appUrlShareLink], applicationActivities: nil)
-                self.present(activityController, animated: true, completion: nil)
+                self.present(activityController, animated: true, completion: {
+                    self.bannerView.removeFromSuperview()
+                })
             }
             
         } else {

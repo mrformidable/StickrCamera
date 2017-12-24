@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import GoogleMobileAds
 
 protocol AddStickerViewDelegate: class {
     func didSelectSticker(_ image:UIImage)
@@ -35,6 +36,8 @@ class AddStickerViewController: UIViewController {
 
     private var isRotating = false
     
+    private var interstitial: GADInterstitial!
+    
     var stickers = [Sticker]()
 
     override func viewDidLoad() {
@@ -45,7 +48,38 @@ class AddStickerViewController: UIViewController {
         
         stickerImageView.frame = CGRect(x: view.frame.midX, y: view.frame.midY, width: 120, height: 120)
         
-        stickers = CreateSticker.generateStickers2()
+        stickers = CreateSticker.sampleStickers()
+        interstitial = createAndLoadInterstitial()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+      
+        if AccountStatus.returnUserAdRemovalStatus() {
+            print("should not show any ads")
+        } else {
+            print("show ads here")
+            showInterstitialAds()
+        }
+        
+        if AccountStatus.returnUserPremiumStatus() {
+           print("should not show ads here")
+        } else {
+            if AccountStatus.returnUserAdRemovalStatus() {
+                print("user paid to remove ads")
+                return
+            }
+          showInterstitialAds()
+            print("show ads here")
+        }
+    }
+    
+    private func showInterstitialAds() {
+        if self.interstitial.isReady {
+            self.interstitial.present(fromRootViewController: self)
+        } else {
+            print("error showing ad")
+        }
     }
     
     private func gestureImplimentation() {
@@ -114,12 +148,18 @@ class AddStickerViewController: UIViewController {
     }
     
     @IBAction func doneButtonTapped(_ sender: Any) {
-        
         guard let selectedSticker = getImageFromRendering(with: imageView, controllerView: self.view, topContainerView: topContainerView) else {
             return
         }
         delegate?.didSelectSticker(selectedSticker)
         dismiss(animated: true, completion: nil)
+    }
+    
+   private func createAndLoadInterstitial() -> GADInterstitial {
+        interstitial = GADInterstitial(adUnitID: AdAppIdentifiers.stickerAd.rawValue)
+        interstitial.delegate = self
+        interstitial.load(GADRequest())
+        return interstitial
     }
    
 }
@@ -161,6 +201,11 @@ extension AddStickerViewController: UIGestureRecognizerDelegate {
     }
 }
 
+extension AddStickerViewController: GADInterstitialDelegate {
+    func interstitialDidDismissScreen(_ ad: GADInterstitial) {
+        interstitial = createAndLoadInterstitial()
+    }
+}
 
 
 

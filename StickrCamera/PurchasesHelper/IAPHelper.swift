@@ -9,7 +9,7 @@
 import Foundation
 import StoreKit
 
-class IAPHelper: NSObject {
+public class IAPHelper: NSObject {
     
     private override init() { }
     
@@ -25,7 +25,6 @@ class IAPHelper: NSObject {
     
     var unlockPremiumPurchaseMade = UserDefaults.standard.bool(forKey: "unlockPremiumPurchaseMade")
     
-
     fileprivate let paymentQueue = SKPaymentQueue.default()
     
     func getIapProducts() {
@@ -62,24 +61,46 @@ class IAPHelper: NSObject {
 
 extension IAPHelper: SKProductsRequestDelegate {
     
-    func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
+    public func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
         self.products = response.products
     }
 }
 
 extension IAPHelper:SKPaymentTransactionObserver {
     
-    func paymentQueueRestoreCompletedTransactionsFinished(_ queue: SKPaymentQueue) {
+    public func paymentQueueRestoreCompletedTransactionsFinished(_ queue: SKPaymentQueue) {
         if (queue.transactions.count == 0) {
             print("No ads to restore")
             NotificationCenter.default.post(name: NSNotification.Name.init("HandleFailedRestorePurchasesNotification"), object: nil)
         } else {
             NotificationCenter.default.post(name: NSNotification.Name.init("CompletedRestorePurchasesNotification"), object: nil)
-            print("restoring ads")
+
+            for t in queue.transactions {
+                guard let originalProductId = t.original?.payment.productIdentifier else {
+                    print("could not retreive orignal product")
+                    return
+                }
+
+                if originalProductId == IAPProducts.unlockPremiumProduct.rawValue {
+                    print("should only restore preimium account")
+                    unlockPremiumPurchaseMade = true
+                    UserDefaults.standard.set(unlockPremiumPurchaseMade, forKey: "unlockPremiumPurchaseMade")
+                    UserDefaults.standard.synchronize()
+                   
+                }
+
+                if originalProductId == IAPProducts.removeAdsProduct.rawValue {
+                    print("should only restore ads")
+                    removeAdsPurchaseMade = true
+                    UserDefaults.standard.set(removeAdsPurchaseMade, forKey: "removeAdsPurchaseMade")
+                    UserDefaults.standard.synchronize()
+                    NotificationCenter.default.post(name: NSNotification.Name.init("RemoveAdsPurchaseMade"), object: nil)
+                }
+            }
         }
     }
     
-    func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
+    public func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
         
         for transaction in transactions {
             switch transaction.transactionState {
@@ -90,12 +111,15 @@ extension IAPHelper:SKPaymentTransactionObserver {
                 UserDefaults.standard.set(removeAdsPurchaseMade, forKey: "removeAdsPurchaseMade")
                 UserDefaults.standard.synchronize()
                 print("ads unlocked")
-                //NotificationCenter.default.post(name: NSNotification.Name(rawValue:"RemoveAds"), object: nil)
-            } else if productIdentifier == IAPProducts.unlockPremiumProduct.rawValue {
+                NotificationCenter.default.post(name: NSNotification.Name.init("RemoveAdsPurchaseMade"), object: nil)
+            } else if productIdentifier ==
+                IAPProducts.unlockPremiumProduct.rawValue {
                 unlockPremiumPurchaseMade = true
                 UserDefaults.standard.set(unlockPremiumPurchaseMade, forKey: "unlockPremiumPurchaseMade")
+                removeAdsPurchaseMade = true
+                UserDefaults.standard.set(removeAdsPurchaseMade, forKey: "removeAdsPurchaseMade")
                 UserDefaults.standard.synchronize()
-                print("Premium unlocked")
+                NotificationCenter.default.post(name: NSNotification.Name.init("UnlockPremiumPurchaseMade"), object: nil)
             }
                 break
             case .purchasing:
@@ -107,11 +131,6 @@ extension IAPHelper:SKPaymentTransactionObserver {
                 break
             case .restored: print("the purchases have been restored")
             SKPaymentQueue.default().finishTransaction(transaction)
-            removeAdsPurchaseMade = true
-            UserDefaults.standard.set(removeAdsPurchaseMade, forKey: "nonConsumablePurchaseMade")
-            unlockPremiumPurchaseMade = true
-            UserDefaults.standard.set(unlockPremiumPurchaseMade, forKey: "unlockPremiumPurchaseMade")
-            UserDefaults.standard.synchronize()
                 break
             case .failed: print("failed...")
             SKPaymentQueue.default().finishTransaction(transaction)

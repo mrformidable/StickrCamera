@@ -7,11 +7,12 @@
 //
 
 import UIKit
-
+import GoogleMobileAds
 
 protocol FilterViewControllerDelegate: class {
     func didChooseFilter(_ image:UIImage)
 }
+
 
 class FilterViewController: UIViewController {
     
@@ -29,6 +30,10 @@ class FilterViewController: UIViewController {
     
     private let cellIdentifier = "FilterCell"
     
+    let unlockedPremiumState = UserDefaults.standard.bool(forKey: "unlockPremiumPurchaseMade")
+    
+    let removeAdsPurchaseMade = UserDefaults.standard.bool(forKey: "removeAdsPurchaseMade")
+    
     private lazy var collectionView:UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsetsMake(0, 10, 0, 0)
@@ -40,6 +45,8 @@ class FilterViewController: UIViewController {
         collectionView.delegate = self
         return collectionView
     }()
+    
+    private var interstitial:GADInterstitial!
     
     let filters = [Filter(filterName: .none),
                    Filter(filterName: .sepia),
@@ -62,32 +69,61 @@ class FilterViewController: UIViewController {
         imageView.image = image
         thumbnailImage = resizeImage(image: image, ratio: 0.3)
         editedImage = resizeImage(image: image, ratio: 1.0)
+        
+        interstitial = createAndLoadInterstitial()
+    }
+  
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if AccountStatus.returnUserAdRemovalStatus() {
+            print("should not show any ads")
+        } else {
+            print("show ads here")
+            showInterstitialAds()
+        }
+        
+        if AccountStatus.returnUserPremiumStatus() {
+            print("should not show ads here")
+        } else {
+            if AccountStatus.returnUserAdRemovalStatus() {
+                print("user paid to remove ads")
+                return
+            }
+            showInterstitialAds()
+            print("show ads here")
+        }
+        
+        print(AccountStatus.returnUserAdRemovalStatus(), "ad status")
+        print(AccountStatus.returnUserPremiumStatus(), "premium status")
     }
     
+    private func showInterstitialAds() {
+        if self.interstitial.isReady {
+            self.interstitial.present(fromRootViewController: self)
+        } else {
+            print("error showing ad")
+        }
+    }
     
     @IBAction func cancelButtonTapped(_ sender: Any) {
         dismiss(animated: true, completion: nil)
     }
     
     @IBAction func doneButtonTapped(_ sender: Any) {
-        // check if user is sure
-        guard let image = imageView.image else {
-            return
-        }
-        
+        guard let image = imageView.image else { return }
         delegate?.didChooseFilter(image)
         dismiss(animated: true, completion: nil)
-
     }
     
-    override var prefersStatusBarHidden: Bool {
-        return true
+  private func createAndLoadInterstitial() -> GADInterstitial {
+        interstitial = GADInterstitial(adUnitID: AdAppIdentifiers.filterAd.rawValue)
+        interstitial.delegate = self
+        interstitial.load(GADRequest())
+        return interstitial
     }
-    
 }
 
 extension FilterViewController: UICollectionViewDataSource {
-    
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
@@ -107,9 +143,8 @@ extension FilterViewController: UICollectionViewDataSource {
         
         return cell
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
         if indexPath.item == 0 {
             imageView.image = image
         } else {
@@ -130,8 +165,11 @@ extension FilterViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
-
-
+extension FilterViewController: GADInterstitialDelegate {
+    func interstitialDidDismissScreen(_ ad: GADInterstitial) {
+        interstitial = createAndLoadInterstitial()
+    }
+}
 
 
 

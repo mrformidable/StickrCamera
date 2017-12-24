@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -14,7 +15,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        //UIApplication.shared.isStatusBarHidden = true
+
+        FirebaseApp.configure()
+        GADMobileAds.configure(withApplicationID: "ca-app-pub-3054229073481845~8577514823")
         return true
     }
     

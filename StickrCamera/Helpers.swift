@@ -8,6 +8,24 @@
 
 import UIKit
 
+public enum AdAppIdentifiers:String {
+    case filterAd = "ca-app-pub-3054229073481845/2832210036"
+    case stickerAd = "ca-app-pub-3054229073481845/9741055701"
+    case bannerAd = "ca-app-pub-3054229073481845/5047966377"
+}
+
+public struct AccountStatus {
+    static func returnUserPremiumStatus() -> Bool {
+        let unlockedPremiumState = UserDefaults.standard.bool(forKey: "unlockPremiumPurchaseMade")
+        return unlockedPremiumState
+    }
+    
+    static func returnUserAdRemovalStatus() -> Bool {
+        let removeAdsPurchaseMade = UserDefaults.standard.bool(forKey: "removeAdsPurchaseMade")
+        return removeAdsPurchaseMade
+    }
+}
+
 public func resizeImage(image: UIImage, ratio:CGFloat) -> UIImage {
     let resizedSize = CGSize(width: Int(image.size.width * ratio), height: Int(image.size.height * ratio))
     UIGraphicsBeginImageContext(resizedSize)

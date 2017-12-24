@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol StickerHeaderCellDelegate: class {
+public protocol StickerHeaderCellDelegate: class {
     func didTapSegment(_ segment:Int)
 }
 
@@ -16,7 +16,7 @@ class StickerHeaderCell: UICollectionViewCell {
     
     weak var delegate:StickerHeaderCellDelegate?
     
-    lazy var stickerSegmentControl:UISegmentedControl = {
+     lazy var stickerSegmentControl:UISegmentedControl = {
        let segementControl = UISegmentedControl()
         segementControl.tintColor = .black
         segementControl.addTarget(self, action: #selector(didChangeSegment(_:)), for: UIControlEvents.valueChanged)

@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum IAPProducts:String {    
+public enum IAPProducts:String {    
     case removeAdsProduct = "com.creativemic.StickrCam.RemoveAds"
     case unlockPremiumProduct = "com.creativemic.StickrCam.UnlockPremium"
 }

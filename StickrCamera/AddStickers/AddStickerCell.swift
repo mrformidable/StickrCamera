@@ -19,5 +19,4 @@ class AddStickerCell: UICollectionViewCell {
         layer.cornerRadius = 5
         layer.masksToBounds = true
     }
-    
 }

@@ -75,12 +75,12 @@ class CustomAlertView:UIView {
         let button = UIButton()
         let rationToSubtract =  (40 / frame.width) * frame.width
         let height:CGFloat = frame.width * 0.13333
-        button.frame = CGRect(x: 20, y: self.containerView.frame.height / 2 - (height / 2) + 60, width: self.containerView.frame.width - rationToSubtract, height: height)
+        button.frame = CGRect(x: 20, y: self.containerView.frame.height / 2 - (height / 2) + 70, width: self.containerView.frame.width - rationToSubtract, height: height)
         
         let fontSize = fontSizeToUse(for: frame.width)
         
         let attributes = [NSAttributedStringKey.font:UIFont.boldSystemFont(ofSize: fontSize), NSAttributedStringKey.foregroundColor:UIColor.white]
-        let attributedTitle = NSMutableAttributedString(string: "Unlock Premum", attributes: attributes)
+        let attributedTitle = NSMutableAttributedString(string: "Unlock Premium", attributes: attributes)
         button.setAttributedTitle(attributedTitle, for: .normal)
         button.layer.cornerRadius = height / 2
         button.backgroundColor = .black
